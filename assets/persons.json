@@ -1,0 +1,75 @@
+[
+    {
+        "id": 1,
+        "title": "จุดที่ 1",
+        "subtitle": "อาคารสำนักงาน",
+        "typeid": 1
+    },
+    {
+        "id": 2,
+        "title": "จุดที่ 2",
+        "subtitle": "อาคารโรงผลิต 1",
+        "typeid": 1
+    },
+    {
+        "id": 3,
+        "title": "c",
+        "subtitle": "อาคารโรงผลิต 2",
+        "typeid": 1
+    },
+    {
+        "id": 4,
+        "title": "d",
+        "subtitle": "อาคารโรงผลิต 3",
+        "typeid": 1
+    },
+    {
+        "id": 5,
+        "title": "e",
+        "subtitle": "อาคารโรงผลิต 4",
+        "typeid": 1
+    },
+    {
+        "id": 6,
+        "title": "f",
+        "subtitle": "อาคารโรงผลิต 5",
+        "typeid": 1
+    },
+    {
+        "id": 7,
+        "title": "g",
+        "subtitle": "อาคารโรงผลิต 6",
+        "typeid": 1
+    },
+    {
+        "id": 8,
+        "title": "h",
+        "subtitle": "อาคารโรงผลิต 7",
+        "typeid": 1
+    },
+    {
+        "id": 5,
+        "title": "e",
+        "subtitle": "อาคารโรงผลิต 4",
+        "typeid": 1
+    },
+    {
+        "id": 6,
+        "title": "f",
+        "subtitle": "อาคารโรงผลิต 5",
+        "typeid": 1
+    },
+    {
+        "id": 7,
+        "title": "g",
+        "subtitle": "อาคารโรงผลิต 6",
+        "typeid": 1
+    },
+    {
+        "id": 8,
+        "title": "h",
+        "subtitle": "อาคารโรงผลิต 7",
+        "typeid": 1
+    }
+
+]
