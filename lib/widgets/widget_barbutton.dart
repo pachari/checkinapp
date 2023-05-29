@@ -2,6 +2,7 @@ import 'package:checkinapp/states/home.dart';
 import 'package:checkinapp/states/states_calendar.dart';
 import 'package:checkinapp/states/states_checkinmap.dart';
 import 'package:checkinapp/states/states_setting.dart';
+import 'package:checkinapp/states/states_todolist.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:checkinapp/componants/constants.dart';
@@ -22,6 +23,7 @@ class _WidgetBarItemState extends State<WidgetBarItem> {
   final List<Widget> _pageWidget = <Widget>[
     const HomePage(),
     const CheckInMap(),
+    const ToDoList(),
     const CalendarApp(),
     const SettingApp(),
   ];
@@ -34,6 +36,10 @@ class _WidgetBarItemState extends State<WidgetBarItem> {
     const BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.locationArrow),
       label: 'Map',
+    ),
+     const BottomNavigationBarItem(
+      icon: Icon(FontAwesomeIcons.list),
+      label: 'To-Do list',
     ),
     const BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.clockRotateLeft),

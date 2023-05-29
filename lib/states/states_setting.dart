@@ -32,7 +32,7 @@ class SettingApp extends StatelessWidget {
             ),
             Container(
               width: 360,
-              height: 600,
+              height: 520,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -41,7 +41,7 @@ class SettingApp extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.only(left: 20,right: 20),
                     child: Column(
                       children: [
                         Padding(

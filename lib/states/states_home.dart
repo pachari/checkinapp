@@ -1,6 +1,6 @@
 import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/utility/app_curved.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomeApp extends StatefulWidget {
@@ -10,8 +10,8 @@ class HomeApp extends StatefulWidget {
   State<HomeApp> createState() => _HomeAppState();
 }
 
-final user = FirebaseAuth.instance.currentUser;
-String? email = user?.email;
+// final user = FirebaseAuth.instance.currentUser;
+// String? email = user?.email;
 
 class _HomeAppState extends State<HomeApp> {
   @override
@@ -36,9 +36,9 @@ class _HomeAppState extends State<HomeApp> {
                   ], //Colors.red.withOpacity(0.4)
                 ),
               ),
-              child: Column(
+              child: const Column(
                 children: [
-                  const Row(
+                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
@@ -55,8 +55,8 @@ class _HomeAppState extends State<HomeApp> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        '$email',
-                        style: const TextStyle(
+                        'Text', //$email
+                        style:  TextStyle(
                             fontSize: kDefaultFont,
                             color: Colors.white,
                             // fontWeight: FontWeight.bold,
