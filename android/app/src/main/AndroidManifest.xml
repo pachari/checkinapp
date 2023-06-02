@@ -1,8 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:label="checkinapp"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyBx_Ye4cp7AYDmDoLJ5J6CPTLP49rKQui8"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

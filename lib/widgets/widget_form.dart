@@ -13,7 +13,7 @@ class WidgetForm extends StatelessWidget {
   final double? marginTop;
   final String? hint;
   final TextEditingController? textEditingController;
-  final Icon? iconController;
+  final IconButton? iconController;
   final bool obscureTextController;
 
   @override

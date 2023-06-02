@@ -43,6 +43,15 @@ dependencies:
   firebase_core: ^2.13.0
   qr_code_scanner: ^1.0.1
   qr_flutter: ^4.1.0
+  geolocator: ^9.0.2
+  cloud_firestore: ^4.7.1
+  google_maps_flutter: ^2.2.8
+  flutter_bloc: ^8.1.1
+  uuid: ^3.0.7
+  bloc: ^8.1.0
+  equatable: ^2.0.5
+  intl: ^0.17.0
+  flutter_clean_calendar: ^1.1.0
 
 dev_dependencies:
   flutter_test:

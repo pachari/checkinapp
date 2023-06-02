@@ -2,10 +2,12 @@ import 'package:checkinapp/states/home.dart';
 import 'package:checkinapp/states/states_calendar.dart';
 import 'package:checkinapp/states/states_checkinmap.dart';
 import 'package:checkinapp/states/states_setting.dart';
-import 'package:checkinapp/states/states_todolist.dart';
+// import 'package:checkinapp/states/states_todolist_.dart';
+// import 'package:checkinapp/utility/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:checkinapp/componants/constants.dart';
+// import 'package:get/get.dart';
 
 class WidgetBarItem extends StatefulWidget {
   final int currentPage;
@@ -19,11 +21,12 @@ class WidgetBarItem extends StatefulWidget {
 }
 
 class _WidgetBarItemState extends State<WidgetBarItem> {
+  // AppController controller = Get.put(AppController());
   int _selectedIndex = 0;
   final List<Widget> _pageWidget = <Widget>[
     const HomePage(),
     const CheckInMap(),
-    const ToDoList(),
+    // const ToDoList(),
     const CalendarApp(),
     const SettingApp(),
   ];
@@ -37,10 +40,10 @@ class _WidgetBarItemState extends State<WidgetBarItem> {
       icon: Icon(FontAwesomeIcons.locationArrow),
       label: 'Map',
     ),
-     const BottomNavigationBarItem(
-      icon: Icon(FontAwesomeIcons.list),
-      label: 'To-Do list',
-    ),
+    // const BottomNavigationBarItem(
+    //   icon: Icon(FontAwesomeIcons.list),
+    //   label: 'To-Do list',
+    // ),
     const BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.clockRotateLeft),
       label: 'History',
@@ -54,15 +57,12 @@ class _WidgetBarItemState extends State<WidgetBarItem> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // if (widget.currentPage == 9999) {
-    //   _selectedIndex = 1;
-    //   // widget.currentPage = 0;
-    // }
     return Scaffold(
       body: _pageWidget.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(

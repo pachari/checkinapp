@@ -20,8 +20,15 @@ class LoginApp extends StatefulWidget {
 class _LoginAppState extends State<LoginApp> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   var user = FirebaseAuth.instance.currentUser;
+  bool _passwordVisible = false;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordVisible = true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +95,11 @@ class _LoginAppState extends State<LoginApp> {
                             marginTop: 10,
                             hint: 'Email Address',
                             textEditingController: emailController,
-                            iconController: const Icon(
-                                FontAwesomeIcons.envelope,
-                                color: kTrushColor),
+                            // iconController: const Icon( FontAwesomeIcons.envelope, color: kTrushColor),
+                            iconController: IconButton(
+                                icon: const Icon(FontAwesomeIcons.envelope,
+                                    color: kTrushColor),
+                                onPressed: () {}),
                             obscureTextController: false),
                       ],
                     ),
@@ -101,10 +110,20 @@ class _LoginAppState extends State<LoginApp> {
                             marginTop: 12,
                             hint: 'Password',
                             textEditingController: passwordController,
-                            iconController: const Icon(
-                                FontAwesomeIcons.eyeSlash,
-                                color: kTrushColor),
-                            obscureTextController: true),
+                            // iconController: const Icon( FontAwesomeIcons.eyeSlash, color: kTrushColor),
+                            iconController: IconButton(
+                              icon:  Icon(
+                                  _passwordVisible
+                                      ? FontAwesomeIcons.eyeSlash
+                                      : FontAwesomeIcons.eye,
+                                  color: kTrushColor),
+                              onPressed: () {
+                                setState(() {
+                                  _passwordVisible = !_passwordVisible;
+                                });
+                              },
+                            ),
+                            obscureTextController: _passwordVisible),
                       ],
                     ),
                     const SizedBox(
@@ -205,7 +224,7 @@ class _LoginAppState extends State<LoginApp> {
     try {
       user = await _auth
           .signInWithEmailAndPassword(
-        email: emailController.text.trim(), //"pachari_pm@hotmail.com", 
+        email: emailController.text.trim(), //"pachari_pm@hotmail.com",
         password: passwordController.text.trim(), //"123456", //
       )
           .then((user) {
@@ -235,7 +254,11 @@ class _LoginAppState extends State<LoginApp> {
       print("Already singed-in with");
       SchedulerBinding.instance.addPostFrameCallback((_) {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const WidgetBarItem(currentPage:0,)));
+            context,
+            MaterialPageRoute(
+                builder: (context) => const WidgetBarItem(
+                      currentPage: 0,
+                    )));
       });
     }
   }

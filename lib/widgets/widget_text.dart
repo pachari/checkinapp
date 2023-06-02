@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 
 class WidgetText extends StatelessWidget {
-  const WidgetText({super.key});
+  const WidgetText({
+    Key? key,
+    required this.data,
+    this.textStyle,
+  }) : super(key: key);
+
+  final String data;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold();
+    return Text(data,style: textStyle,);
   }
 }

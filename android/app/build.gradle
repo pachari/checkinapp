@@ -28,7 +28,7 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     namespace "com.tkschemicalthailand.checkinapp"
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -45,14 +45,11 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.tkschemicalthailand.checkinapp"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 20//flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        minSdkVersion 24
+        targetSdkVersion 33
+        versionCode 1
+        versionName '1.0.0'
     }
 
     buildTypes {

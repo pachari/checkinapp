@@ -1,0 +1,26 @@
+part of 'filtered_todos_search.dart';
+
+class TodoSearchState {
+  final String searchTerm;
+
+  TodoSearchState({required this.searchTerm});
+
+  factory TodoSearchState.initial(){
+    return TodoSearchState(searchTerm: '');
+  }
+
+  List<Object> get props => [searchTerm];
+
+  @override
+  String toString() {
+    return 'TodoSearchState{searchTerm: $searchTerm}';
+  }
+
+  TodoSearchState copyWith({
+    String? searchTerm,
+  }) {
+    return TodoSearchState(
+      searchTerm: searchTerm ?? this.searchTerm,
+    );
+  }
+}

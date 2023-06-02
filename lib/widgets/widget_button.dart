@@ -12,7 +12,7 @@ class WidgetButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
+    return TextButton(
         onPressed: pressFunc,
         child: Text(label));
   }
