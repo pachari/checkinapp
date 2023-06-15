@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 import 'package:bloc/bloc.dart';
 import 'package:checkinapp/utility/app_controller.dart';
-import 'package:checkinapp/utility/app_service.dart';
+// import 'package:checkinapp/utility/app_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -57,6 +57,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       return todo;
     }).toList();
     emit(state.copyWith(todos: newTodos));
+    print(state);
   }
 
   void _removeTodo(RemoveTodoEvent event, Emitter<TodoListState> emit) {
@@ -75,6 +76,21 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     var formattedDate = DateFormat('yyyyMMdd').format(DateTime.now());
     for (int i = 0; i < state.todos.length; i++) {
       finishtodo.add(state.todos[i].completed);
+      //clear data completed type true
+      // if (state.todos[i].completed == true) {
+      //   final newTodos = state.todos.map((Todo todo) {
+      //     if (todo.id == '$i') {
+      //       return Todo(
+      //         id: '$i',
+      //         desc: todo.desc,
+      //         completed: !todo.completed,
+      //       );
+      //     }
+
+      //     return todo;
+      //   }).toList();
+      //   emit(state.copyWith(todos: newTodos));
+      // }
     }
     try {
       //before
@@ -100,13 +116,13 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       await todolists
           .doc(user?.uid)
           .collection(formattedDate)
-          .doc("id${event.id}") 
+          .doc("id${event.id}")
           .set({
         "finishtodo": finishtodo,
         "timestampIn": DateTime.now(),
         "timestampOut": DateTime.now(),
         "uidCheck": user?.uid,
-        "checkinid": event.id
+        "checkinid": event.id,
       });
     } catch (e) {
       print(e);

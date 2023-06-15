@@ -1,3 +1,4 @@
+import 'package:checkinapp/componants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,7 +27,17 @@ class _CreateTodoState extends State<CreateTodo> {
       padding: const EdgeInsets.all(2.0),
       child: TextField(
         controller: newTodoController,
-        decoration: const InputDecoration(labelText: 'เพิ่มรายการ'),
+        decoration: InputDecoration(
+          hintText: 'เพิ่มรายการ',
+          focusedBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: Colors.blue),
+              borderRadius: BorderRadius.circular(25.0),
+              gapPadding: 1),
+          prefixIcon: const Icon(
+            Icons.add_card_rounded,
+            color: kselectedItemColor,
+          ),
+        ),
         onSubmitted: (String? todoDesc) {
           if (todoDesc != null && todoDesc.trim().isNotEmpty) {
             context.read<TodoListBloc>().add(AddTodoEvent(todoDesc));

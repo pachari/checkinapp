@@ -83,47 +83,66 @@ class _ShowTodosState extends State<ShowTodos> {
           },
         ),
       ],
-      child: ListView.separated(
-        primary: false,
-        shrinkWrap: true,
-        itemCount: context.watch<FilteredTodosBloc>().state.filteredTodos.length, 
-        separatorBuilder: (BuildContext context, int index) {
-          return const Divider(color: Colors.grey);
-        },
-        itemBuilder: (BuildContext context, int index) {
-          return TodoItem(todo: context.watch<FilteredTodosBloc>().state.filteredTodos[index]); //cut shows delete
-          // Dismissible(
-          //   key: ValueKey(todos[index].id),
-          // background: showBackground(0),
-          // secondaryBackground: showBackground(1),
-          // onDismissed: (_) {
-          // context.read<TodoListBloc>().add(RemoveTodoEvent(todos[index]));
-          // },
-          // confirmDismiss: (_) {
-          //   return showDialog(
-          //     context: context,
-          //     barrierDismissible: false,
-          //     builder: (context) {
-          //       return AlertDialog(
-          //         title: const Text('Are you sure?'),
-          //         content: const Text('Do you really want to delete?'),
-          //         actions: [
-          //           TextButton(
-          //             onPressed: () => Navigator.pop(context, false),
-          //             child: const Text('NO'),
-          //           ),
-          //           TextButton(
-          //             onPressed: () => Navigator.pop(context, true),
-          //             child: const Text('YES'),
-          //           ),
-          //         ],
-          //       );
-          //     },
-          //   );
-          // },
-          // child: TodoItem(todo: todos[index]),
-          // );
-        },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SingleChildScrollView(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height / 1.30, //1.6
+              child: ListView.separated(
+                primary: false,
+                shrinkWrap: true,
+                itemCount: context
+                    .watch<FilteredTodosBloc>()
+                    .state
+                    .filteredTodos
+                    .length,
+                separatorBuilder: (BuildContext context, int index) {
+                  return const Divider(color: Colors.grey);
+                },
+                itemBuilder: (BuildContext context, int index) {
+                  return TodoItem(
+                      todo: context
+                          .watch<FilteredTodosBloc>()
+                          .state
+                          .filteredTodos[index]); //cut shows delete
+                  // Dismissible(
+                  //   key: ValueKey(todos[index].id),
+                  // background: showBackground(0),
+                  // secondaryBackground: showBackground(1),
+                  // onDismissed: (_) {
+                  // context.read<TodoListBloc>().add(RemoveTodoEvent(todos[index]));
+                  // },
+                  // confirmDismiss: (_) {
+                  //   return showDialog(
+                  //     context: context,
+                  //     barrierDismissible: false,
+                  //     builder: (context) {
+                  //       return AlertDialog(
+                  //         title: const Text('Are you sure?'),
+                  //         content: const Text('Do you really want to delete?'),
+                  //         actions: [
+                  //           TextButton(
+                  //             onPressed: () => Navigator.pop(context, false),
+                  //             child: const Text('NO'),
+                  //           ),
+                  //           TextButton(
+                  //             onPressed: () => Navigator.pop(context, true),
+                  //             child: const Text('YES'),
+                  //           ),
+                  //         ],
+                  //       );
+                  //     },
+                  //   );
+                  // },
+                  // child: TodoItem(todo: todos[index]),
+                  // );
+                },
+              ),
+            ),
+          ),
+          
+        ],
       ),
     );
   }
@@ -140,12 +159,12 @@ class TodoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40.0,
+      height: 45.0,
       child: ListTile(
         onTap: () {},
         leading: Checkbox(
           shape: const CircleBorder(),
-          checkColor: Colors.white, 
+          checkColor: Colors.white,
           activeColor: Colors.green,
           value: todo.completed,
           onChanged: (bool? checked) {
@@ -154,7 +173,7 @@ class TodoItem extends StatelessWidget {
         ),
         title: Text(
           todo.desc,
-          style: const TextStyle(color: kTextColor, fontSize: 15),
+          style: const TextStyle(color: kTextColor, fontSize: 16),
         ),
       ),
     );

@@ -11,18 +11,18 @@ class SettingApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        decoration: const BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-              Color(0xFF8A2387),
-              Color(0xFFE94057),
-              Color(0xFFF27121),
-            ])),
+        // decoration: const BoxDecoration(
+        //     gradient: LinearGradient(
+        //         begin: Alignment.topLeft,
+        //         end: Alignment.bottomRight,
+        //         colors: [
+        //       Color(0xFF8A2387),
+        //       Color(0xFFE94057),
+        //       Color(0xFFF27121),
+        //     ])),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -41,36 +41,36 @@ class SettingApp extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 20,right: 20),
+                      padding: const EdgeInsets.only(left: 20, right: 20),
                       child: Column(
                         children: [
                           Padding(
                             padding: const EdgeInsets.fromLTRB(10, 30, 10, 30),
                             child: buildContainerAvatar(),
                           ),
+                          // const Divider(),
+                          buildCards(
+                              context,
+                              'สร้าง Qr-code',
+                              Icons.arrow_forward_ios_rounded,
+                              Icons.qr_code_rounded,
+                              3),
+                          const Divider(),
+                          buildCards(
+                              context,
+                              'ลงทะเบียนผู้ใช้งาน', //Qr-code Reader
+                              Icons.arrow_forward_ios_rounded,
+                              Icons.qr_code_scanner,
+                              2),
+                          const Divider(),
                           buildCards(
                               context,
                               'Logout',
                               Icons.arrow_forward_ios_rounded,
                               Icons.logout_outlined,
                               1),
-                          const Divider(),
-                          buildCards(
-                              context,
-                              'Qr-code Create',
-                              Icons.arrow_forward_ios_rounded,
-                              Icons.qr_code_rounded,
-                              2),
-                          const Divider(),
-                          buildCards(
-                              context,
-                              'Singin', //Qr-code Reader
-                              Icons.arrow_forward_ios_rounded,
-                              Icons.qr_code_scanner,
-                              3),
-                          const Divider(),
-                          buildCards(context, 'Login',
-                              Icons.arrow_forward_ios_rounded, Icons.login, 4),
+                          // buildCards(context, 'Login',
+                          //     Icons.arrow_forward_ios_rounded, Icons.login, 4),
                         ],
                       ),
                     ),
@@ -103,15 +103,15 @@ Widget buildCards(context, title, iconsfrist, icons, tabs) {
       onTap: () {
         if (tabs == 1) {
           signOut(context);
-        } else if (tabs == 2) {
+        } else if (tabs == 3) {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const QRcodeCreate()),
           );
-        } else if (tabs == 3) {
+        } else if (tabs == 2) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  const SingInApp()),
+            MaterialPageRoute(builder: (context) => const SingInApp()),
           );
         } else if (tabs == 4) {
           Navigator.push(

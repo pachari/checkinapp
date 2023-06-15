@@ -1,4 +1,4 @@
-import 'package:checkinapp/componants/background.dart';
+// import 'package:checkinapp/componants/background.dart';
 import 'package:checkinapp/componants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -15,36 +15,34 @@ class _QRcodeCreateState extends State<QRcodeCreate> {
 
   @override
   Widget build(BuildContext context) {
-    return Background(
-      child: SafeArea(
-        child: Scaffold(
-           appBar: AppBar(
-            // automaticallyImplyLeading: false,
-            backgroundColor: kPrimaryColor,
-            title: const Text(
-              "QR-code Create",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Color.fromARGB(255, 255, 255, 255)),
-            ),
+    return SafeArea(
+      child: Scaffold(
+         appBar: AppBar(
+          // automaticallyImplyLeading: false,
+          backgroundColor: kPrimaryColor,
+          title: const Text(
+            "QR-code Create",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Color.fromARGB(255, 255, 255, 255)),
           ),
-          body: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  QrImageView(
-                    data: controller.text,
-                    size: 200,
-                  ),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  buildTextField(context),
-                ],
-              ),
+        ),
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                QrImageView(
+                  data: controller.text,
+                  size: 200,
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                buildTextField(context),
+              ],
             ),
           ),
         ),

@@ -22,8 +22,8 @@ class WidgetForm extends StatelessWidget {
       margin: EdgeInsets.only(top: marginTop ?? 16),
       // width: 350,
       // height: 45,
-      width: 260,
-      height: 60,
+      width: 280,
+      height: 50,
       child: TextFormField(
         controller: textEditingController,
         obscureText: obscureTextController,

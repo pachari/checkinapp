@@ -2,7 +2,8 @@ import 'dart:io';
 
 // import 'package:checkinapp/states/states_confirm_checkin.dart';
 import 'package:checkinapp/states/states_todolist.dart';
-import 'package:checkinapp/utility/app_dialog.dart';
+import 'package:checkinapp/utility/app_controller.dart';
+import 'package:checkinapp/widgets/widget_barbutton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -23,14 +24,16 @@ class QRcodeReader extends StatefulWidget {
 }
 
 class _QRcodeReaderState extends State<QRcodeReader> {
+  AppController controller = Get.put(AppController());
+
   final qrKey = GlobalKey(debugLabel: 'QR');
 
   Barcode? barcode;
-  QRViewController? controller;
+  QRViewController? controllers;
 
   @override
   void dispose() {
-    controller?.dispose();
+    controllers?.dispose();
     super.dispose();
   }
 
@@ -39,9 +42,9 @@ class _QRcodeReaderState extends State<QRcodeReader> {
     super.reassemble();
 
     if (Platform.isAndroid) {
-      await controller?.pauseCamera();
+      await controllers?.pauseCamera();
     }
-    controller!.resumeCamera();
+    controllers!.resumeCamera();
   }
 
   @override
@@ -87,23 +90,35 @@ class _QRcodeReaderState extends State<QRcodeReader> {
         ),
       );
 
-  void onQRViewCreated(QRViewController controller) {
+  void onQRViewCreated(QRViewController controllers) {
     setState(() {
-      this.controller = controller;
+      this.controllers = controllers;
     });
 
-    controller.scannedDataStream.listen((barcode) {
-
+    controllers.scannedDataStream.listen((barcode) async {
       if (widget.factoryModel.qr == barcode.code) {
         // Get.offAll( ConfirmCheckIn(factoryModel: widget.factoryModel,));
-        Get.offAll( ToDoList(factoryModel: widget.factoryModel,));
-      } else {
-        AppDialog(context: context).normalDialog(title: "You can't scan the qrcode because the data is invalid. Please select the checkpoint again.",content:'Warning!');
-      }
+        // Get.offAll(ToDoList(
+        //   factoryModel: widget.factoryModel,
+        // ));
+        // Navigator.of(context, rootNavigator: true).pop();
+        Get.offAll(ToDoList(
+          factoryModel: widget.factoryModel,
+        ));
 
-      setState(() {
-        this.barcode = barcode;
-      });
+        setState(() {
+          this.barcode = barcode;
+        });
+      } else {
+        await showAlertDialog(context);
+        // AppDialog(context: context).normalDialog(
+        //     title:
+        //         "You can't scan the qrcode because the data is invalid. Please select the checkpoint again.",
+        //     content: 'Warning!');
+        // Navigator.of(context, rootNavigator: true).pop();
+        // await Get.offAll(() => WidgetBarItem(
+        //     currentPage: 1, roleUser: controller.userModels.last.role));
+      }
     });
   }
 
@@ -138,7 +153,7 @@ class _QRcodeReaderState extends State<QRcodeReader> {
           children: <Widget>[
             IconButton(
               icon: FutureBuilder<bool?>(
-                future: controller?.getFlashStatus(),
+                future: controllers?.getFlashStatus(),
                 builder: (context, snapshot) {
                   if (snapshot.data != null) {
                     return Icon(
@@ -149,7 +164,7 @@ class _QRcodeReaderState extends State<QRcodeReader> {
                 },
               ),
               onPressed: () async {
-                await controller?.toggleFlash();
+                await controllers?.toggleFlash();
                 setState(
                   () {},
                 );
@@ -157,7 +172,7 @@ class _QRcodeReaderState extends State<QRcodeReader> {
             ),
             IconButton(
               icon: FutureBuilder(
-                future: controller?.getCameraInfo(),
+                future: controllers?.getCameraInfo(),
                 builder: (context, snapshot) {
                   if (snapshot.data != null) {
                     return const Icon(Icons.switch_camera);
@@ -167,7 +182,7 @@ class _QRcodeReaderState extends State<QRcodeReader> {
                 },
               ),
               onPressed: () async {
-                await controller?.flipCamera();
+                await controllers?.flipCamera();
                 setState(
                   () {},
                 );
@@ -176,6 +191,34 @@ class _QRcodeReaderState extends State<QRcodeReader> {
           ],
         ),
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: const Text("OK"),
+      onPressed: () {
+        // Navigator.of(context, rootNavigator: true).pop();
+        Get.offAll(() => WidgetBarItem(
+            currentPage: 1, roleUser: controller.userModels.last.role));
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("Warning!"),
+      content: const Text(
+          "You can't scan the qrcode because the data is invalid. Please select the checkpoint again."),
+      actions: [
+        okButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

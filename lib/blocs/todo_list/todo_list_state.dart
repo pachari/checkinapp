@@ -6,7 +6,7 @@ class TodoListState extends Equatable {
   const TodoListState({required this.todos});
 
   factory TodoListState.initial() {
-    AppService().readUserModel();
+    // AppService().readUserModel();
     AppController controller = Get.put(AppController());
     List<Todo> strarray = [];
     for (var i = 0; i < controller.userModels.last.todo.length; i++) {

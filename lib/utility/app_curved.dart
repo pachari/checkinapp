@@ -6,7 +6,7 @@ class CurvedWidget extends StatelessWidget {
   final double curvedHeight;
 
   const CurvedWidget(
-      { Key? key, this.curvedDistance = 50, this.curvedHeight = 40, required  this.child})
+      { Key? key, this.curvedDistance = 100, this.curvedHeight = 30, required  this.child})
       : super(key: key);
 
   @override
@@ -32,11 +32,9 @@ class CurvedWidgetBackgroundClipper extends CustomClipper<Path> {
     Path clippedPath = Path();
     clippedPath.lineTo(size.width, 0);
     clippedPath.lineTo(size.width, size.height - curvedDistance - curvedHeight);
-    clippedPath.quadraticBezierTo(size.width, size.height - curvedHeight,
-        size.width - curvedDistance, size.height - curvedHeight);
+    clippedPath.quadraticBezierTo(size.width, size.height - curvedHeight, size.width - curvedDistance, size.height - curvedHeight);
     clippedPath.lineTo(curvedDistance, size.height - curvedHeight);
-    clippedPath.quadraticBezierTo(
-        0, size.height - curvedHeight, 0, size.height);
+    clippedPath.quadraticBezierTo( 0, size.height - curvedHeight, 0, size.height);
     clippedPath.lineTo(0, 0);
     return clippedPath;
   }

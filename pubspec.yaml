@@ -52,6 +52,11 @@ dependencies:
   equatable: ^2.0.5
   intl: ^0.17.0
   flutter_clean_calendar: ^1.1.0
+  firebase_storage: ^11.2.2
+  image_picker: ^0.8.7+5
+  path: ^1.8.3
+  dotted_border: ^2.0.0+3
+  flutter_svg: ^2.0.7
 
 dev_dependencies:
   flutter_test:

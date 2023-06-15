@@ -10,42 +10,37 @@ class FactoryModel {
   final String subtitle;
   final int typeid;
   final GeoPoint position;
+  final int id;
   // final double lat;
   // final double lng;
   final String qr;
   FactoryModel({
-    // required this.id,
     required this.title,
     required this.subtitle,
     required this.typeid,
     required this.position,
-    // required this.lat,
-    // required this.lng,
+    required this.id,
     required this.qr,
   });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      // 'id': id,
       'title': title,
       'subtitle': subtitle,
       'typeid': typeid,
       'position': position,
-      // 'lat': lat,
-      // 'lng': lng,
+      'id': id,
       'qr': qr,
     };
   }
 
   factory FactoryModel.fromMap(Map<String, dynamic> map) {
     return FactoryModel(
-      // id: (map['id'] ?? 0) as int,
       title: (map['title'] ?? '') as String,
       subtitle: (map['subtitle'] ?? '') as String,
       typeid: (map['typeid'] ?? 0) as int,
-      position: (map['position']) as GeoPoint,
-      // lat: (map['lat'] ?? 0.0) as double,
-      // lng: (map['lng'] ?? 0.0) as double,
+      position: map['position'],
+      id: (map['id'] ?? 0) as int,
       qr: (map['qr'] ?? '') as String,
     );
   }

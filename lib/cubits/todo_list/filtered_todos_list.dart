@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:checkinapp/utility/app_controller.dart';
-import 'package:checkinapp/utility/app_service.dart';
+// import 'package:checkinapp/utility/app_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:checkinapp/models/todo_model.dart';
 import 'package:get/get.dart';
@@ -41,8 +41,6 @@ class TodoListCubit extends Cubit<TodoListState> {
       return todo;
     }).toList();
     emit(state.copyWith(todos: newTodos));
-    // ignore: avoid_print
-    print(state);
   }
 
   void removeTodo(Todo todo) {

@@ -1,9 +1,13 @@
 // ignore_for_file: avoid_print
 
+import 'package:checkinapp/utility/app_controller.dart';
+import 'package:checkinapp/utility/app_service.dart';
 import 'package:checkinapp/widgets/widget_barbutton.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/utility/app_snackbar.dart';
@@ -23,6 +27,10 @@ class _LoginAppState extends State<LoginApp> {
   bool _passwordVisible = false;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  String role = '';
+  String uid = '';
+  String name = '';
 
   @override
   void initState() {
@@ -85,7 +93,7 @@ class _LoginAppState extends State<LoginApp> {
                       "Please Login to Your Account",
                       style: TextStyle(
                         color: Colors.grey,
-                        fontSize: 15,
+                        fontSize: kDefaultFont,
                       ),
                     ),
                     Row(
@@ -98,7 +106,7 @@ class _LoginAppState extends State<LoginApp> {
                             // iconController: const Icon( FontAwesomeIcons.envelope, color: kTrushColor),
                             iconController: IconButton(
                                 icon: const Icon(FontAwesomeIcons.envelope,
-                                    color: kTrushColor),
+                                    color: kTrushColor,size: 20,),
                                 onPressed: () {}),
                             obscureTextController: false),
                       ],
@@ -112,11 +120,11 @@ class _LoginAppState extends State<LoginApp> {
                             textEditingController: passwordController,
                             // iconController: const Icon( FontAwesomeIcons.eyeSlash, color: kTrushColor),
                             iconController: IconButton(
-                              icon:  Icon(
+                              icon: Icon(
                                   _passwordVisible
                                       ? FontAwesomeIcons.eyeSlash
                                       : FontAwesomeIcons.eye,
-                                  color: kTrushColor),
+                                  color: kTrushColor,size: 20,),
                               onPressed: () {
                                 setState(() {
                                   _passwordVisible = !_passwordVisible;
@@ -232,11 +240,13 @@ class _LoginAppState extends State<LoginApp> {
         checkAuth(context); // add here
       }).catchError((error) {
         print(error.message);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${error.message}'),
-          ),
-        );
+        AppSnackBar(title: 'Login Failure', massage: '${error.message}')
+            .errorSnackBar();
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text('${error.message}'),
+        //   ),
+        // );
       });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -248,17 +258,34 @@ class _LoginAppState extends State<LoginApp> {
   }
 
   Future checkAuth(BuildContext context) async {
-    var user = FirebaseAuth.instance.currentUser;
-    // Firebase user = await _auth.currentUser;
-    if (user != null) {
-      print("Already singed-in with");
+    final user = FirebaseAuth.instance.currentUser;
+    await AppService().readUserModel();
+    AppController controller = Get.put(AppController());
+    if (user != null &&
+        controller.userModels.last.role == 'admin' &&
+        controller.userModels.last.uid == user.uid) {
+      print("Already singed-in with Admin ");
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const WidgetBarItem(
-                      currentPage: 0,
-                    )));
+        // Get.offAll(WidgetBarItem(
+        //     currentPage: 0, roleUser: controller.userModels.last.role));
+        Get.offAll(() => WidgetBarItem(
+            currentPage: 0, roleUser: controller.userModels.last.role));
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => const WidgetBarItem( currentPage: 0)));
+      });
+    } else {
+      print("Already singed-in with User ");
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        Get.offAll(() => WidgetBarItem(
+            currentPage: 0, roleUser: controller.userModels.last.role));
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => const WidgetBarItem(
+        //               currentPage: 0,
+        //             )));
       });
     }
   }

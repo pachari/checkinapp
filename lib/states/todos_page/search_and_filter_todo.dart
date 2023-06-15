@@ -20,21 +20,25 @@ class SearchAndFilterTodo extends StatelessWidget {
           // ),
 
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               filterButton(context, Filter.all),
-              filterButton(context, Filter.active),
+              // filterButton(context, Filter.active),
               filterButton(context, Filter.completed),
             ],
           ),
           const SizedBox(height: 5.0),
           TextField(
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(vertical: 5),
-              labelText: 'ค้นหา',
-              border: InputBorder.none,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(vertical: 5),
+              hintText: 'ค้นหา',
+              // border: InputBorder.none,
+              focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.blue),
+                  borderRadius: BorderRadius.circular(25.0),
+                  gapPadding: 1),
               filled: true,
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: const Icon(Icons.search),
             ),
             onChanged: (String? newSearchTerm) {
               if (newSearchTerm != null) {
@@ -63,7 +67,7 @@ class SearchAndFilterTodo extends StatelessWidget {
                 ? 'Pending' //Pending รอดำเนินการ
                 : 'Completed', //Completed สำเร็จ
         style: TextStyle(
-          fontSize: 16.0,
+          fontSize: 14.0,
           fontWeight: FontWeight.w600,
           color: textColor(context, filter),
         ),

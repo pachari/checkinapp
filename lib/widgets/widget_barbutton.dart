@@ -1,19 +1,22 @@
-import 'package:checkinapp/states/home.dart';
+// ignore_for_file: avoid_print, must_be_immutable
+// import 'package:checkinapp/componants/constants.dart';
+import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/states/states_calendar.dart';
-import 'package:checkinapp/states/states_checkinmap.dart';
+import 'package:checkinapp/states/states_home.dart';
+import 'package:checkinapp/states/states_listcheckin.dart';
 import 'package:checkinapp/states/states_setting.dart';
-// import 'package:checkinapp/states/states_todolist_.dart';
-// import 'package:checkinapp/utility/app_controller.dart';
+import 'package:checkinapp/utility/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:checkinapp/componants/constants.dart';
-// import 'package:get/get.dart';
+import 'package:get/get.dart';
 
 class WidgetBarItem extends StatefulWidget {
   final int currentPage;
+  final String roleUser;
   const WidgetBarItem({
     Key? key,
     required this.currentPage,
+    required this.roleUser,
   }) : super(key: key);
 
   @override
@@ -21,57 +24,123 @@ class WidgetBarItem extends StatefulWidget {
 }
 
 class _WidgetBarItemState extends State<WidgetBarItem> {
-  // AppController controller = Get.put(AppController());
+  AppController controller = Get.put(AppController());
   int _selectedIndex = 0;
-  final List<Widget> _pageWidget = <Widget>[
-    const HomePage(),
-    const CheckInMap(),
-    // const ToDoList(),
-    const CalendarApp(),
-    const SettingApp(),
-  ];
+  bool isAdmin = false;
 
-  final List<BottomNavigationBarItem> _menuBar = <BottomNavigationBarItem>[
-    const BottomNavigationBarItem(
+  List<Widget> nonAdminWidgets(_WidgetBarItemState parent) {
+    return <Widget>[
+      const Home(), //const HomePage(),
+      const Listcheckin(),//const CheckInMap(),
+      const CalendarApp(),
+    ];
+  }
+
+  List<Widget> adminWidgets(_WidgetBarItemState parent) {
+    return <Widget>[
+      const Home(), //const HomePage(),
+      const Listcheckin(),
+      // const CheckInMap(),
+      const CalendarApp(),
+      const SettingApp(),
+    ];
+  }
+
+  List<BottomNavigationBarItem> nonAdminNavBars = const [
+    BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.house),
       label: 'Home',
     ),
-    const BottomNavigationBarItem(
-      icon: Icon(FontAwesomeIcons.locationArrow),
-      label: 'Map',
+    BottomNavigationBarItem(
+      icon: Icon(FontAwesomeIcons.listCheck),
+      label: 'Check-in',
     ),
-    // const BottomNavigationBarItem(
-    //   icon: Icon(FontAwesomeIcons.list),
-    //   label: 'To-Do list',
+    // BottomNavigationBarItem(
+    //   icon: Icon(FontAwesomeIcons.locationArrow),
+    //   label: 'Map',
     // ),
-    const BottomNavigationBarItem(
+    BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.clockRotateLeft),
       label: 'History',
     ),
-    const BottomNavigationBarItem(
+  ];
+
+  List<BottomNavigationBarItem> adminNavBars = const [
+    BottomNavigationBarItem(
+      icon: Icon(FontAwesomeIcons.house),
+      label: 'Home',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(FontAwesomeIcons.listCheck),
+      label: 'Check-in',
+    ),
+    // BottomNavigationBarItem(
+    //   icon: Icon(FontAwesomeIcons.locationArrow),
+    //   label: 'Map',
+    // ),
+    BottomNavigationBarItem(
+      icon: Icon(FontAwesomeIcons.clockRotateLeft),
+      label: 'History',
+    ),
+    BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.gear),
       label: 'Settings',
     ),
+    // BottomNavigationBarItem(
+    //   icon: Icon(FontAwesomeIcons.gear),
+    //   label: 'Home2',
+    // ),
   ];
 
   void _onItemTapped(int index) {
+    // if (widget.currentPage > 0) {
+    //   setState(() {
+    //     _selectedIndex = widget.currentPage;
+    //   });
+    // } else {
     setState(() {
       _selectedIndex = index;
-      
     });
+    // }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.currentPage;
+    if (widget.roleUser == 'admin') {
+      isAdmin = true;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print('Login Role ==> ${widget.roleUser}');
     return Scaffold(
-      body: _pageWidget.elementAt(_selectedIndex),
+      backgroundColor: Colors.white,
+      body: isAdmin
+          ? adminWidgets(this)[_selectedIndex]
+          : nonAdminWidgets(this)[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        items: _menuBar,
+        type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
-        selectedItemColor: kPrimaryColor,
+        backgroundColor: Colors.white, //Colors.orangeAccent,
+        selectedItemColor: kPrimaryColor, //Colors.white,
         unselectedItemColor: kselectedItemColor,
         onTap: _onItemTapped,
+        items: isAdmin ? adminNavBars : nonAdminNavBars,
       ),
     );
+    // return Scaffold(
+    //     body: bottompage(), //_pageWidget.elementAt(_selectedIndex),
+    //     bottomNavigationBar: bottombar()
+    //     // BottomNavigationBar(
+    //     //   items: _menuBar,
+    //     //   currentIndex: _selectedIndex,
+    //     //   selectedItemColor: kPrimaryColor,
+    //     //   unselectedItemColor: kselectedItemColor,
+    //     //   onTap: _onItemTapped,
+    //     // ),
+    //     );
   }
 }

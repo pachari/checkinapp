@@ -48,7 +48,7 @@ class _CheckInMapState extends State<CheckInMap> {
           markerId: markerId,
           title: 'คุณอยู่ที่นี่',
           subtitle: 'You Here',
-          hue: 240);
+          hue: 0);
 
       mapMarkers[markerId] = marker;
     });

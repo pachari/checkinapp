@@ -4,15 +4,19 @@ import 'dart:convert';
 class CheckTodoResultModels {
   final int result;
   final List<String> resultcheckinid;
+  final String collectiondate;
+  
   CheckTodoResultModels({
     required this.result,
     required this.resultcheckinid,
+    required this.collectiondate,
   });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'result': result,
       'resultcheckinid': resultcheckinid,
+      'collectiondate': collectiondate,
     };
   }
 
@@ -20,6 +24,7 @@ class CheckTodoResultModels {
     return CheckTodoResultModels(
       result: (map['result'] ?? 0) as int,
       resultcheckinid: List<String>.from((map['resultcheckinid'] ?? const <String>[]) as List<String>),
+      collectiondate: (map['collectiondate'] ?? '') as String,
     );
   }
 

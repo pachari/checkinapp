@@ -3,7 +3,7 @@
 import 'package:checkinapp/models/factory_model.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 // import 'package:checkinapp/utility/app_dialog.dart';
-import 'package:checkinapp/utility/app_service.dart';
+// import 'package:checkinapp/utility/app_service.dart';
 // import 'package:checkinapp/widgets/widget_barbutton.dart';
 // import 'package:checkinapp/widgets/widget_button.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -29,7 +29,7 @@ class _ConfirmCheckInState extends State<ConfirmCheckIn> {
   @override
   void initState() {
     super.initState();
-    AppService().readUserModel();
+    // AppService().readUserModel();
   }
 
   DateTime dateTime = DateTime.now();
