@@ -8,7 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
+// import 'package:lottie/lottie.dart';
 import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/utility/app_snackbar.dart';
 import 'package:checkinapp/widgets/widget_form.dart';
@@ -73,21 +73,21 @@ class _LoginAppState extends State<LoginApp> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const SizedBox(
-                      height: 10,
+                      height: 50,
                     ),
-                    // const Text(
-                    //   "Hello",
-                    //   style:
-                    //       TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    const Text(
+                      "CHECK-IN",
+                      style:
+                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    ),
+                    // SizedBox(
+                    //   height: 100,
+                    //   width: 300,
+                    //   child: LottieBuilder.asset(
+                    //       "assets/lottie/144705-a-boat-on-the-river.json"),
                     // ),
-                    SizedBox(
-                      height: 100,
-                      width: 300,
-                      child: LottieBuilder.asset(
-                          "assets/lottie/144705-a-boat-on-the-river.json"),
-                    ),
                     const SizedBox(
-                      height: 10,
+                      height: 40,
                     ),
                     const Text(
                       "Please Login to Your Account",

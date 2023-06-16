@@ -1,9 +1,9 @@
 // ignore_for_file: avoid_print, must_be_immutable
 // import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/componants/constants.dart';
-import 'package:checkinapp/states/states_calendar.dart';
-import 'package:checkinapp/states/states_home.dart';
-import 'package:checkinapp/states/states_listcheckin.dart';
+import 'package:checkinapp/states/calendar.dart';
+import 'package:checkinapp/states/home.dart';
+import 'package:checkinapp/states/listcheckin.dart';
 import 'package:checkinapp/states/states_setting.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +24,7 @@ class WidgetBarItem extends StatefulWidget {
 }
 
 class _WidgetBarItemState extends State<WidgetBarItem> {
+  
   AppController controller = Get.put(AppController());
   int _selectedIndex = 0;
   bool isAdmin = false;
@@ -49,11 +50,11 @@ class _WidgetBarItemState extends State<WidgetBarItem> {
   List<BottomNavigationBarItem> nonAdminNavBars = const [
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.house),
-      label: 'Home',
+      label: 'หน้าหลัก',
     ),
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.listCheck),
-      label: 'Check-in',
+      label: 'จุดเช็คอิน',
     ),
     // BottomNavigationBarItem(
     //   icon: Icon(FontAwesomeIcons.locationArrow),
@@ -61,18 +62,18 @@ class _WidgetBarItemState extends State<WidgetBarItem> {
     // ),
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.clockRotateLeft),
-      label: 'History',
+      label: 'ประวัติ',
     ),
   ];
 
   List<BottomNavigationBarItem> adminNavBars = const [
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.house),
-      label: 'Home',
+      label: 'หน้าหลัก',
     ),
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.listCheck),
-      label: 'Check-in',
+      label: 'จุดเช็คอิน',
     ),
     // BottomNavigationBarItem(
     //   icon: Icon(FontAwesomeIcons.locationArrow),
@@ -80,11 +81,11 @@ class _WidgetBarItemState extends State<WidgetBarItem> {
     // ),
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.clockRotateLeft),
-      label: 'History',
+      label: 'ประวัติ',
     ),
     BottomNavigationBarItem(
       icon: Icon(FontAwesomeIcons.gear),
-      label: 'Settings',
+      label: 'ตั้งค่า',
     ),
     // BottomNavigationBarItem(
     //   icon: Icon(FontAwesomeIcons.gear),
@@ -131,16 +132,5 @@ class _WidgetBarItemState extends State<WidgetBarItem> {
         items: isAdmin ? adminNavBars : nonAdminNavBars,
       ),
     );
-    // return Scaffold(
-    //     body: bottompage(), //_pageWidget.elementAt(_selectedIndex),
-    //     bottomNavigationBar: bottombar()
-    //     // BottomNavigationBar(
-    //     //   items: _menuBar,
-    //     //   currentIndex: _selectedIndex,
-    //     //   selectedItemColor: kPrimaryColor,
-    //     //   unselectedItemColor: kselectedItemColor,
-    //     //   onTap: _onItemTapped,
-    //     // ),
-    //     );
   }
 }

@@ -8,6 +8,6 @@ const kBackgroundColor = Color(0xFFF9F8FD);
 const kselectedItemColor = Colors.grey;
 const kTabsColor = Colors.orangeAccent; //Color.fromARGB(161, 207, 176, 246);
 
-const double kDefaultFont = 16.0;
+const double kDefaultFont = 15.0; //12.0 ป้าเหมียว
 const double kDefaultPedding = 5;
 const double kDefaultCircular = 25;

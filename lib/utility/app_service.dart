@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:checkinapp/blocs/todo_list/todo_list_bloc.dart';
 import 'package:checkinapp/models/calendarevent_model.dart';
 import 'package:checkinapp/models/checktodoresult_model.dart';
+import 'package:checkinapp/models/factory_all_model.dart';
 import 'package:checkinapp/models/factory_model.dart';
 import 'package:checkinapp/models/fileupload_model.dart';
 import 'package:checkinapp/models/todoresult_model.dart';
@@ -77,6 +78,35 @@ class AppService {
         ));
       });
     });
+  }
+  Future<void> readInfoFactoryAll() async {
+    await db.collection('checkin').get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        controller.factoryAllModels.add(FactoryAllModel(
+            position: doc["position"],
+            qr: doc["qr"],
+            subtitle: doc["subtitle"],
+            title: doc["title"],
+            typeid: doc["typeid"],
+            id: doc["id"]));
+      });
+    });
+    // await FirebaseFirestore.instance
+    //     .collection('checkin')
+    //     .where('id', isEqualTo: id) //controller.userModels.last.typeworkid
+    //     .get()
+    //     .then((QuerySnapshot querySnapshot) {
+    //   querySnapshot.docs.forEach((doc) {
+    //     controller.todoresultModels.add(FactoryAllModel(
+    //       position: doc["position"],
+    //       qr: doc["qr"],
+    //       subtitle: doc["subtitle"],
+    //       title: doc["title"],
+    //       typeid: doc["typeid"],
+    //       id: doc["id"],
+    //     ));
+    //   });
+    // });
   }
 
   Future<void> readUserModel() async {
@@ -284,8 +314,7 @@ class AppService {
     controller.calendaralleventModels.add(calendaralleventModels);
   }
 
-  double calculateDistance(
-      double lat2, double lng2, RxList<Position> position) {
+  double calculateDistance(double lat2, double lng2, RxList<Position> position) {
     double distance = 0.0;
     if (position.isNotEmpty) {
       double lat1 = controller.position.last.latitude;

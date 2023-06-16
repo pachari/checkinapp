@@ -1,6 +1,6 @@
 import 'package:checkinapp/componants/constants.dart';
-import 'package:checkinapp/states/states_login.dart';
-import 'package:checkinapp/states/states_qrcode_create.dart';
+import 'package:checkinapp/states/login.dart';
+import 'package:checkinapp/states/qrcode_create.dart';
 import 'package:checkinapp/states/states_singin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

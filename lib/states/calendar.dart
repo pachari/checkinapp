@@ -142,29 +142,22 @@ Future loadDataallEvent2() async {
             todoActiveIDs.add(controller.userModels.last.todo[r]);
           }
         }
-        for (var v = 0; v < controller.factoryModels.length; v++) {
-          if (controller.todoresultModels.last.checkinid ==
-              controller.factoryModels[v].id) {
-            titles =
-                '${controller.factoryModels[z].title} ${controller.factoryModels[z].subtitle}';
+        for (var v = 0; v < controller.factoryAllModels.length; v++) {
+          if (controller.todoresultModels.last.checkinid == controller.factoryAllModels[v].id) {
+            titles = '${controller.factoryAllModels[v].title} ${controller.factoryAllModels[v].subtitle}';
             todolistid = controller.todoresultModels.last.checkinid;
           }
         }
         //ช้อมูลเวลาเข้า-ออก
-        DateTime timestart =
-            (controller.todoresultModels.last.timestampIn).toDate();
-        DateTime timeend =
-            (controller.todoresultModels.last.timestampOut)!.toDate();
+        DateTime timestart = (controller.todoresultModels.last.timestampIn).toDate();
+        DateTime timeend =  (controller.todoresultModels.last.timestampOut)!.toDate();
         //ชุดข้อมูลตามวัน
-        DateTime timeevent =
-            DateTime.parse(controller.calendaralleventModels.last.dataDate[i]);
+        DateTime timeevent =  DateTime.parse(controller.calendaralleventModels.last.dataDate[i]);
         //set detail event calendar
         myListString.add(CleanCalendarEvent(
           titles,
-          startTime: DateTime(timestart.year, timestart.month, timestart.day,
-              timestart.hour, timestart.minute),
-          endTime: DateTime(timeend.year, timeend.month, timeend.day,
-              timeend.hour, timeend.minute),
+          startTime: DateTime(timestart.year, timestart.month, timestart.day,timestart.hour, timestart.minute),
+          endTime: DateTime(timeend.year, timeend.month, timeend.day,timeend.hour, timeend.minute),
           description: '$todoActiveIDs',
           todoid: todolistid,
           // image: controller.fileuploadModels.last.name,
@@ -219,7 +212,7 @@ Widget buildContainerbodyHello() {
           isExpanded: false,
           expandableDateFormat: 'EEEE, dd. MMMM yyyy',
           dayOfWeekStyle: const TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w800, fontSize: 14),
+              color: Colors.black, fontWeight: FontWeight.w800, fontSize: kDefaultFont),
           eventListBuilder:
               (BuildContext context, List<CleanCalendarEvent> events) {
             return Expanded(
@@ -313,7 +306,7 @@ class _GeneratelistState extends State<Generatelist> {
       dense: true,
       title: Text(
         widget.event.summary,
-        style: const TextStyle(fontSize: 14),
+        style: const TextStyle(fontSize: kDefaultFont),
       ),
       // subtitle: event.description.isNotEmpty
       //     ? Text(event.description)
@@ -323,9 +316,10 @@ class _GeneratelistState extends State<Generatelist> {
         children: [
           Text(
             widget.start,
-            style: const TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: kDefaultFont),
           ),
-          Text(widget.end)
+          Text(widget.end,
+           style: const TextStyle(fontSize: kDefaultFont),)
         ],
       ),
       onTap: () async {

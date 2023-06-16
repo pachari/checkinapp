@@ -88,7 +88,7 @@ class _ShowTodosState extends State<ShowTodos> {
         children: [
           SingleChildScrollView(
             child: SizedBox(
-              height: MediaQuery.of(context).size.height / 1.30, //1.6
+              height: MediaQuery.of(context).size.height / 6.0, //1.6 1.30
               child: ListView.separated(
                 primary: false,
                 shrinkWrap: true,

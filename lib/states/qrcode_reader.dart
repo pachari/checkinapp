@@ -1,7 +1,7 @@
 import 'dart:io';
 
 // import 'package:checkinapp/states/states_confirm_checkin.dart';
-import 'package:checkinapp/states/states_todolist.dart';
+import 'package:checkinapp/states/todolist.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/widgets/widget_barbutton.dart';
 import 'package:flutter/material.dart';

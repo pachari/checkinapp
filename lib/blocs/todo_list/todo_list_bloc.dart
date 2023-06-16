@@ -117,12 +117,12 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
           .doc(user?.uid)
           .collection(formattedDate)
           .doc("id${event.id}")
-          .set({
+          .update({
         "finishtodo": finishtodo,
-        "timestampIn": DateTime.now(),
+        // "timestampIn": DateTime.now(),
         "timestampOut": DateTime.now(),
-        "uidCheck": user?.uid,
-        "checkinid": event.id,
+        // "uidCheck": user?.uid,
+        // "checkinid": event.id,
       });
     } catch (e) {
       print(e);
