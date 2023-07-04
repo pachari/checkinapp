@@ -5,7 +5,7 @@ import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/models/factory_model.dart';
 // import 'package:checkinapp/models/factory_model.dart';
 import 'package:checkinapp/utility/app_controller.dart';
-import 'package:checkinapp/utility/app_service.dart';
+// import 'package:checkinapp/utility/app_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:checkinapp/utility/app_curved.dart';
 // import 'package:checkinapp/utility/app_service.dart';
@@ -30,22 +30,10 @@ final user = FirebaseAuth.instance.currentUser;
 class HomeState extends State<Home> {
   List factorys = [];
   List original = [];
-  // Color bg = kPrimaryColor;
-  // int checkbg = 0;
-  // int typeRoleid = 1;
-  // TextEditingController txtQuery = TextEditingController();
   AppController controller = Get.put(AppController());
-  // Map<MarkerId, Marker> mapMarkers = {};
-
   Future<void> readInfoFactory() async {
-    // if (controller.factoryModels.isNotEmpty) {
-    //   controller.factoryModels.clear();
-    // }
-    await AppService().readUserModel();
     await FirebaseFirestore.instance
         .collection('checkin')
-        // .where('typeid',isEqualTo: controller.userModels[0].typeworkid) //controller.userModels.last.typeworkid
-        // .orderBy('id')
         .get()
         .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
@@ -61,7 +49,6 @@ class HomeState extends State<Home> {
         }
       });
     });
-    // loadData();
   }
 
   void loadData() {
@@ -192,7 +179,6 @@ class HomeState extends State<Home> {
                   ),
                 ),
               ]),
-              // const SizedBox(height: kDefaultPedding * 1),
               const Text(
                 "WELCOME TO CHECK-IN",
                 style: TextStyle(
@@ -200,23 +186,6 @@ class HomeState extends State<Home> {
                   fontSize: 20,
                 ),
               ),
-              // const Text(
-              //   'Hello,',
-              //   style: TextStyle(
-              //       fontSize: 40,
-              //       // color: Colors.white,
-              //       fontWeight: FontWeight.bold,
-              //       fontStyle: FontStyle.italic),
-              // ),
-              // const Text(
-              //   'Welcome to Check-in app',
-              //   style: TextStyle(
-              //       fontSize: 20,
-              //       // color: Colors.white,
-              //       fontWeight: FontWeight.bold,
-              //       fontStyle: FontStyle.italic),
-              // ),
-              // const SizedBox(height: kDefaultPedding * 2),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -225,7 +194,7 @@ class HomeState extends State<Home> {
                     style: const TextStyle(
                       fontSize: kDefaultFont,
                       // fontWeight: FontWeight.bold,
-                      // fontStyle: FontStyle.italic,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -234,7 +203,7 @@ class HomeState extends State<Home> {
                     style: const TextStyle(
                       fontSize: kDefaultFont,
                       // fontWeight: FontWeight.bold,
-                      // fontStyle: FontStyle.italic,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
                 ],

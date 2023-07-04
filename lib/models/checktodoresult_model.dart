@@ -10,6 +10,7 @@ class CheckTodoResultModels {
     required this.result,
     required this.resultcheckinid,
     required this.collectiondate,
+    
   });
 
   Map<String, dynamic> toMap() {

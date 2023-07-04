@@ -2,7 +2,7 @@
 
 import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/models/factory_model.dart';
-import 'package:checkinapp/states/todolist.dart';
+// import 'package:checkinapp/states/todolist.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/utility/app_curved.dart';
 import 'package:checkinapp/utility/app_dialog.dart';
@@ -88,7 +88,7 @@ class HomePageState extends State<HomePage> {
 
   Future loadDataTodoResult(int typeid) async {
     await AppService().CheckTodoResultModel(
-        typeid, DateFormat('yyyyMMdd').format(DateTime.now()));
+        typeid, DateFormat('yyyyMMdd').format(DateTime.now()),'');
     if (controller.checktodoresultModels.last.result > 0) {
       return bg = Colors.green;
     } else {
@@ -254,14 +254,14 @@ class HomePageState extends State<HomePage> {
                       if (distance <= 50.0 && distance > 0) {
                         
                         //test
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ToDoList(
-                                    factoryModel:
-                                        controller.factoryModels[index],
-                                  )),
-                        );
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) => ToDoList(
+                        //             factoryModel:
+                        //                 controller.factoryModels[index],
+                        //           )),
+                        // );
                         //Real
                         // Navigator.push(
                         //   context,

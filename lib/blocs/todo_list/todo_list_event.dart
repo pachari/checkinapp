@@ -50,6 +50,20 @@ class ToggleTodoEvent extends TodoListEvent {
   }
 }
 
+class ClearTodoEvent extends TodoListEvent {
+  final String id;
+
+  const ClearTodoEvent(this.id);
+  
+  @override
+  List<Object> get props => [id];
+
+  @override
+  String toString() {
+    return 'clearTodo{id: $id}';
+  }
+}
+
 class RemoveTodoEvent extends TodoListEvent {
   final Todo todo;
 
@@ -65,7 +79,7 @@ class RemoveTodoEvent extends TodoListEvent {
 }
 
 class SaveTodoEvent extends TodoListEvent {
-  final int id;
+  final String id;
 
   const SaveTodoEvent(this.id);
 

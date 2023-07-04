@@ -20,6 +20,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     on<ToggleTodoEvent>(_toggleTodo);
     on<RemoveTodoEvent>(_removeTodo);
     on<SaveTodoEvent>(_saveTodo);
+    on<ClearTodoEvent>(_clearTodo);
   }
   void _addTodo(AddTodoEvent event, Emitter<TodoListState> emit) {
     int countst = state.todos.length + 1;
@@ -51,6 +52,23 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
           id: event.id,
           desc: todo.desc,
           completed: !todo.completed,
+        );
+      }
+
+      return todo;
+    }).toList();
+    emit(state.copyWith(todos: newTodos));
+    print(state);
+  }
+
+  //ไม่ได้ใช้ตัวนี้
+  void _clearTodo(ClearTodoEvent event, Emitter<TodoListState> emit) {
+    final newTodos = state.todos.map((Todo todo) {
+      if (todo.id == event.id) {
+        return Todo(
+          id: event.id,
+          desc: todo.desc,
+          completed: false,
         );
       }
 
@@ -116,12 +134,12 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       await todolists
           .doc(user?.uid)
           .collection(formattedDate)
-          .doc("id${event.id}")
+          .doc(event.id)
           .update({
         "finishtodo": finishtodo,
         // "timestampIn": DateTime.now(),
         "timestampOut": DateTime.now(),
-        // "uidCheck": user?.uid,
+        "todostatus": 2,
         // "checkinid": event.id,
       });
     } catch (e) {

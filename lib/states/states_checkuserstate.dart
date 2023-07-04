@@ -1,4 +1,4 @@
-import 'package:checkinapp/states/login.dart';
+import 'package:checkinapp/states/login_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/widgets/widget_barbutton.dart';
 import 'package:firebase_auth/firebase_auth.dart';

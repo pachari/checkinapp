@@ -15,14 +15,14 @@ class WidgetMap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
-      initialCameraPosition: CameraPosition(target: latLng, zoom: 18),
+      initialCameraPosition: CameraPosition(target: latLng, zoom: 19),
       onMapCreated: (controller) {},
       markers: Set<Marker>.of(mapMarkers.values),
       circles: {
         Circle(
           circleId: const CircleId('cirid'),
           center: latLng,
-          radius: 10,
+          radius: 30,
           strokeWidth: 1,
           fillColor: Colors.red.withOpacity(0.3),
 

@@ -1,9 +1,9 @@
-// ignore_for_file: avoid_function_literals_in_foreach_calls, avoid_print
+// ignore_for_file: avoid_function_literals_in_foreach_calls, avoid_print, use_build_context_synchronously
 
 import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/cubits/todo_list/filtered_todos_list.dart';
 import 'package:checkinapp/models/factory_model.dart';
-import 'package:checkinapp/states/todolist.dart';
+import 'package:checkinapp/states/todolist_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/utility/app_dialog.dart';
 import 'package:checkinapp/utility/app_service.dart';
@@ -34,6 +34,7 @@ class ListcheckinState extends State<Listcheckin> {
   TextEditingController txtQuery = TextEditingController();
   AppController controller = Get.put(AppController());
   Map<MarkerId, Marker> mapMarkers = {};
+  List<String> docid = [];
 
   Future<void> readInfoFactory() async {
     if (controller.factoryModels.isNotEmpty) {
@@ -59,7 +60,6 @@ class ListcheckinState extends State<Listcheckin> {
         }
       });
     });
-    await AppService().readInfoFactoryAll();
     loadData();
   }
 
@@ -93,11 +93,12 @@ class ListcheckinState extends State<Listcheckin> {
 
   Future loadDataTodoResult(int typeid) async {
     await AppService().CheckTodoResultModel(
-        typeid, DateFormat('yyyyMMdd').format(DateTime.now()));
-    if (controller.checktodoresultModels.last.result > 0) {
+        typeid, DateFormat('yyyyMMdd').format(DateTime.now()), '');
+    if (controller.checktodoresultModels.last.resultcheckinid.isNotEmpty) {
+      docid = controller.checktodoresultModels.last.resultcheckinid;
       return true; //bg = Colors.green;
     } else {
-      return false;//bg = kPrimaryColor.withOpacity(0.9);
+      return false; //bg = kPrimaryColor.withOpacity(0.9);
     }
   }
 
@@ -105,7 +106,7 @@ class ListcheckinState extends State<Listcheckin> {
   void initState() {
     super.initState();
     readInfoFactory();
-    loadData();
+    // loadData();
     aboutPositionAndMarker();
     // addMarkerFactory();
   }
@@ -114,7 +115,6 @@ class ListcheckinState extends State<Listcheckin> {
   void dispose() {
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -130,55 +130,65 @@ class ListcheckinState extends State<Listcheckin> {
               color: Color.fromARGB(255, 255, 255, 255)),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(
-          top: 10,
-        ),
-        child: SizedBox(
-          child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SingleChildScrollView(
-                  child: Container(
-                    margin: const EdgeInsets.only(
-                        left: 10, right: 10, top: 0, bottom: 0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        TextFormField(
-                          controller: txtQuery,
-                          onChanged: search,
-                          decoration: InputDecoration(
-                            hintText: "ค้นหา",
-                            // border: OutlineInputBorder(
-                            //     borderRadius: BorderRadius.circular(25.0),
-                            //     gapPadding: 0),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                    const BorderSide(color: Colors.blue),
-                                borderRadius: BorderRadius.circular(25.0),
-                                gapPadding: 1),
-                            prefixIcon: const Icon(
-                              Icons.search,
-                              color: kselectedItemColor,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                txtQuery.text = '';
-                                search(txtQuery.text);
-                              },
+      body: Container(
+        color: kBackgroundColor,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        height: MediaQuery.of(context).size.height - 50,
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.only(
+            top: 20,
+          ),
+          child: SizedBox(
+            child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SingleChildScrollView(
+                    child: Container(
+                      margin: const EdgeInsets.only(
+                          left: 10, right: 10, top: 0, bottom: 0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            controller: txtQuery,
+                            onChanged: search,
+                            decoration: InputDecoration(
+                              hintText: "ค้นหา",
+                              // border: OutlineInputBorder(
+                              //     borderRadius: BorderRadius.circular(25.0),
+                              //     gapPadding: 0),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide:
+                                      const BorderSide(color: kTrushColor),
+                                  borderRadius:
+                                      BorderRadius.circular(kDefaultCircular),
+                                  gapPadding: 1),
+                              prefixIcon: const Icon(
+                                Icons.search,
+                                color: kselectedItemColor,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: const Icon(
+                                  Icons.clear,
+                                  color: kTrushColor,
+                                ),
+                                onPressed: () {
+                                  txtQuery.text = '';
+                                  search(txtQuery.text);
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                _listView()
-              ]),
+                  _listView()
+                ]),
+          ),
         ),
       ),
     );
@@ -199,37 +209,40 @@ class ListcheckinState extends State<Listcheckin> {
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   return ListTile(
                     leading: CircleAvatar(
-                        backgroundColor: snapshot.data== true ? Colors.green : kPrimaryColor.withOpacity(0.9),
-                        child: const Icon(Icons.maps_home_work_sharp,
-                            color: kPrimaryLightColor)),
+                        backgroundColor: snapshot.data == true
+                            ? Colors.green
+                            : kPrimaryColor,
+                        child: const Icon(Icons.pin_drop, //maps_home_work_sharp
+                            color: Colors.white)),
                     title: Text(
                       factory.title,
                       style: const TextStyle(
-                          color: Colors.red,
+                          color: kTextColor,
                           fontSize: kDefaultFont, //12 ป้าเหมียว
                           fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(factory.subtitle,
                         style: const TextStyle(
-                            color: kTextColor, fontSize: kDefaultFont)), //12
+                            color: kselectedItemColor,
+                            fontSize: kDefaultFont)), //12
                     trailing: const Icon(Icons.arrow_forward_ios_rounded),
                     onTap: () {
-                      // if (snapshot.data == true) {
-                      //   Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => ToDoList(
-                      //               factoryModel:
-                      //                   controller.factoryModels[index],
-                      //             )),
-                      //   );
-                      // } else {
+                      // เอาไว้เช็คกรณีเคยกดเข้าเยี่ยมแล้ว ไม่ต้องแจ้งเตือนอีก
+                      if (snapshot.data == true) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ToDoList(
+                                  factoryModel: controller.factoryModels[index],
+                                  todoid: docid[0])),
+                        );
+                      } else {
                         showAlertDialog(
                             context,
                             index,
                             factory.position.latitude,
                             factory.position.longitude);
-                      // }
+                      }
                     },
                   );
                 },
@@ -239,42 +252,40 @@ class ListcheckinState extends State<Listcheckin> {
     );
   }
 
-  void checkdistance(double distance, BuildContext context, int index) {
+  Future<void> checkdistance(
+      double distance, BuildContext context, int index) async {
     List finishtodo = [];
     final CollectionReference reference = FirebaseFirestore.instance
         .collection('todolist')
         .doc(user?.uid)
         .collection(DateFormat('yyyyMMdd').format(DateTime.now()));
-    if (distance <= 50.0 && distance > 0) {
+    if (distance <= 30 && distance > 0) {
       //test
       // context.read<TodoListBloc>().add(SaveTodoEvent(controller.factoryModels[index].id));
       print('dis $distance');
       for (var i = 0; i < TodoListState.initial().todos.length; i++) {
         finishtodo.add(TodoListState.initial().todos[i].completed);
       }
-      reference.doc("id${controller.factoryModels[index].id}").set({
-        //doc("id${controller.factoryModels[index].id}").
+      //ใช้กรณี อยากให้เป็นการเข้าเยี่ยมครั้งเดียว
+      // reference.doc("id${controller.factoryModels[index].id}").set({
+      //ใช้กรณี อยากให้เป็นการเข้าเยี่ยมได้หลายครั้งใน 1 จุด
+      final insertid = await reference.add({
         "finishtodo": finishtodo,
         "timestampIn": DateTime.now(),
         "timestampOut": DateTime.now(),
         "uidCheck": user?.uid,
         "checkinid": controller.factoryModels[index].id,
+        "image": '',
+        "todostatus": 1
       });
       Navigator.of(context, rootNavigator: true).pop();
       Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => ToDoList(
-                  factoryModel: controller.factoryModels[index],
-                )), //
+                factoryModel: controller.factoryModels[index],
+                todoid: insertid.id)), //
       );
-
-      // Get.offAll(() => ToDoList( factoryModel: controller.factoryModels[index], ));
-      //Real
-      // Navigator.of(context, rootNavigator: true).pop();
-      // Get.offAll(() => QRcodeReader(
-      //       factoryModel: controller.factoryModels[index],
-      //     ));
     } else if (distance == 0) {
       Navigator.of(context, rootNavigator: true).pop();
       AppDialog(context: context).normalDialog(
@@ -294,7 +305,7 @@ class ListcheckinState extends State<Listcheckin> {
   showAlertDialog(BuildContext context, index, latitude, longitude) async {
     mapMarkers = {};
     addMarkerFactorySelect(index);
-    // aboutPositionAndMarker();
+    aboutPositionAndMarker();
 
     // set up the button
     Widget okButton = TextButton(
@@ -314,12 +325,12 @@ class ListcheckinState extends State<Listcheckin> {
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: const Text("Confirm Check-in"),
-      content: const Text("ต้องการเข้าเช็คอิน ใช่หรือไม่? "),
+      content: const Text("เข้าเช็คอิน ใช่หรือไม่? "),
       actions: [
         Column(
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height / 5,
+              height: MediaQuery.of(context).size.height / 3,
               width: double.infinity,
               child: GetX(
                   init: AppController(),
@@ -390,15 +401,17 @@ class ListcheckinState extends State<Listcheckin> {
   void aboutPositionAndMarker() {
     AppService().processFindPosition(context: context).then((value) {
       MarkerId markerId = const MarkerId('idUser');
-      Marker marker = AppService().createMarker(
-          latLng: LatLng(controller.position.last.latitude,
-              controller.position.last.longitude),
-          markerId: markerId,
-          title: 'คุณอยู่ที่นี่',
-          subtitle: 'You Here',
-          hue: 0);
+      if (controller.position.isNotEmpty) {
+        Marker marker = AppService().createMarker(
+            latLng: LatLng(controller.position.last.latitude,
+                controller.position.last.longitude),
+            markerId: markerId,
+            title: 'คุณอยู่ที่นี่',
+            subtitle: 'You Here',
+            hue: 0);
 
-      mapMarkers[markerId] = marker;
+        mapMarkers[markerId] = marker;
+      }
     });
   }
 }

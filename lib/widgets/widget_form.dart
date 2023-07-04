@@ -23,14 +23,14 @@ class WidgetForm extends StatelessWidget {
       // width: 350,
       // height: 45,
       width: 280,
-      height: 50,
+      height: 45,
       child: TextFormField(
         controller: textEditingController,
         obscureText: obscureTextController,
         autovalidateMode: AutovalidateMode.always,
         autocorrect: false,
         decoration: InputDecoration(
-            suffix: iconController,
+            prefixIcon: iconController,
             labelText: hint,
             border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(8)),

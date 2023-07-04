@@ -1,7 +1,7 @@
 import 'dart:io';
 
 // import 'package:checkinapp/states/states_confirm_checkin.dart';
-import 'package:checkinapp/states/todolist.dart';
+// import 'package:checkinapp/states/todolist.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/widgets/widget_barbutton.dart';
 import 'package:flutter/material.dart';
@@ -102,9 +102,9 @@ class _QRcodeReaderState extends State<QRcodeReader> {
         //   factoryModel: widget.factoryModel,
         // ));
         // Navigator.of(context, rootNavigator: true).pop();
-        Get.offAll(ToDoList(
-          factoryModel: widget.factoryModel,
-        ));
+        // Get.offAll(ToDoList(
+        //   factoryModel: widget.factoryModel,
+        // ));
 
         setState(() {
           this.barcode = barcode;

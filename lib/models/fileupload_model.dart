@@ -7,12 +7,14 @@ class FileUploads {
   final String remark;
   final String uid;
   final String factoryid;
+  final String todoid;
   FileUploads({
     required this.image,
     required this.name,
     required this.remark,
     required this.uid,
     required this.factoryid,
+    required this.todoid,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,6 +24,7 @@ class FileUploads {
       'remark': remark,
       'uid': uid,
       'factoryid': factoryid,
+      'todoid': todoid,
     };
   }
 
@@ -32,6 +35,7 @@ class FileUploads {
       remark: (map['remark'] ?? '') as String,
       uid: (map['uid'] ?? '') as String,
       factoryid: (map['factoryid'] ?? '') as String,
+      todoid: (map['todoid'] ?? '') as String,
     );
   }
 

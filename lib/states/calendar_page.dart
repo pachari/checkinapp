@@ -3,6 +3,7 @@
 import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/componants/responsive.dart';
 import 'package:checkinapp/utility/app_snackbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
 import 'package:get/get.dart';
@@ -27,12 +28,7 @@ AppController controller = Get.put(AppController());
 String imageUrl = '';
 String Name = '';
 String Remark = '';
-
-// // loadData on selectdate
-// Future loadData(selectdate) async {
-//   myListString = [];
-//   await AppService().CheckTodoResultModel(0, selectdate);
-// }
+final _auth = FirebaseAuth.instance.currentUser;
 
 class _CalendarAppState extends State<CalendarApp> {
   @override
@@ -51,7 +47,7 @@ class _CalendarAppState extends State<CalendarApp> {
         automaticallyImplyLeading: false,
         backgroundColor: kPrimaryColor,
         title: const Text(
-          "History",
+          "ประวัติ",
           style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
@@ -98,9 +94,39 @@ class _CalendarAppState extends State<CalendarApp> {
   }
 }
 
-void _handleNewDate(date) {
+void _handleNewDate(date) async {
   //ignore: avoid_print
   print('Date selected: $date');
+  // showDialog(
+  //   context: context,
+  //   barrierDismissible: false,
+  //   builder: (BuildContext context) {
+  //     return const Dialog(
+  //       child: SizedBox(
+  //         height: 70,
+  //         child: Padding(
+  //           padding: EdgeInsets.all(8.0),
+  //           child: Row(
+  //             mainAxisSize: MainAxisSize.min,
+  //             mainAxisAlignment: MainAxisAlignment.center,
+  //             children: [
+  //               CircularProgressIndicator(),
+  //               Padding(
+  //                 padding: EdgeInsets.all(8.0),
+  //                 child: Text("Loading"),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     );
+  //   },
+  // );
+  int a = AppService().daysBetween(DateTime.now(), date);
+  if (a < 0) {
+    await AppService().readCalendarallEventModel2(_auth!.uid, date);
+    // await loadDataallEvent2();
+  }
 }
 
 Future loadDataallEvent2() async {
@@ -118,65 +144,76 @@ Future loadDataallEvent2() async {
   ];
   String titles = '';
   int todolistid = 0;
+  int colorsNo = 0;
+  List<String> strArry = [];
   // find Result finishtodosid //move call to main.dart
-  // String uid = 'S97KxIE9C7YHwUnlnB5rQaXHHrd2';
-  // await AppService().readCalendarallEventModel2(uid);
+  //วน loop ตามวัน
   for (var i = 0;
       i < controller.calendaralleventModels.last.dataDate.length;
       i++) {
-    //Read data finishtodo type boolean to set event calendar
-    await AppService().CheckTodoResultModel(
-        0, controller.calendaralleventModels.last.dataDate[i]);
     myListString = [];
-    for (var z = 0;
-        z < controller.checktodoresultModels.last.resultcheckinid.length;
-        z++) {
-      if (controller.checktodoresultModels.last.resultcheckinid.isNotEmpty) {
-        await AppService().readTodoResultModel(
-            controller.checktodoresultModels.last.resultcheckinid[z],
-            controller.calendaralleventModels.last.dataDate[i]);
-        for (var r = 0;
-            r < controller.todoresultModels.last.finishtodo.length;
-            r++) {
-          if (controller.todoresultModels.last.finishtodo[r] == true) {
-            todoActiveIDs.add(controller.userModels.last.todo[r]);
+    colorsNo = 0;
+    //วน loop รายการที่มีในวันนั้น
+    for (var c = 0;
+        c < controller.calendaralleventModels.last.finishtodosid.length;
+        c++) {
+      strArry =
+          controller.calendaralleventModels.last.finishtodosid[c].split('-');
+      if (controller.calendaralleventModels.last.dataDate[i] == strArry[0]) {
+        //Read data finishtodo type boolean to set event calendar
+        if (strArry[1].isNotEmpty) {
+          //find data finishtodo on firebase
+          await AppService().readTodoResultModel(
+              strArry[1], controller.calendaralleventModels.last.dataDate[i]);
+          //loop read data finishtodo result true
+          for (var r = 0;
+              r < controller.todoresultModels.last.finishtodo.length;
+              r++) {
+            if (controller.todoresultModels.last.finishtodo[r] == true) {
+              todoActiveIDs.add(controller.userModels.last.todo[r]);
+            }
           }
-        }
-        for (var v = 0; v < controller.factoryAllModels.length; v++) {
-          if (controller.todoresultModels.last.checkinid == controller.factoryAllModels[v].id) {
-            titles = '${controller.factoryAllModels[v].title} ${controller.factoryAllModels[v].subtitle}';
-            todolistid = controller.todoresultModels.last.checkinid;
+          for (var v = 0; v < controller.factoryAllModels.length; v++) {
+            if (controller.todoresultModels.last.checkinid ==
+                controller.factoryAllModels[v].id) {
+              titles =
+                  '${controller.factoryAllModels[v].title} ${controller.factoryAllModels[v].subtitle}';
+              todolistid = controller.todoresultModels.last.checkinid;
+            }
           }
+          //ช้อมูลเวลาเข้า-ออก
+          DateTime timestart =
+              (controller.todoresultModels.last.timestampIn).toDate();
+          DateTime timeend =
+              (controller.todoresultModels.last.timestampOut)!.toDate();
+          //ชุดข้อมูลตามวัน
+          DateTime timeevent = DateTime.parse(
+              controller.calendaralleventModels.last.dataDate[i]);
+          //set detail event calendar
+          myListString.add(CleanCalendarEvent(titles,
+              startTime: DateTime(timestart.year, timestart.month,
+                  timestart.day, timestart.hour, timestart.minute),
+              endTime: DateTime(timeend.year, timeend.month, timeend.day,
+                  timeend.hour, timeend.minute),
+              description: '$todoActiveIDs',
+              todoid: todolistid,
+              image: controller.todoresultModels.last.image,
+              color: colors[colorsNo++],
+              todoresultid: controller.todoresultModels.last.todoresultid));
+          //set event calendar
+          events[DateTime(timeevent.year, timeevent.month, timeevent.day)] =
+              myListString;
+          todoActiveIDs.clear();
+        } else {
+          AppSnackBar(
+                  title: 'Load Data Failure',
+                  massage: 'Please Check Contect Admin')
+              .errorSnackBar();
         }
-        //ช้อมูลเวลาเข้า-ออก
-        DateTime timestart = (controller.todoresultModels.last.timestampIn).toDate();
-        DateTime timeend =  (controller.todoresultModels.last.timestampOut)!.toDate();
-        //ชุดข้อมูลตามวัน
-        DateTime timeevent =  DateTime.parse(controller.calendaralleventModels.last.dataDate[i]);
-        //set detail event calendar
-        myListString.add(CleanCalendarEvent(
-          titles,
-          startTime: DateTime(timestart.year, timestart.month, timestart.day,timestart.hour, timestart.minute),
-          endTime: DateTime(timeend.year, timeend.month, timeend.day,timeend.hour, timeend.minute),
-          description: '$todoActiveIDs',
-          todoid: todolistid,
-          // image: controller.fileuploadModels.last.name,
-          // remark: controller.fileuploadModels.last.remark,
-          color: colors[z],
-        ));
-        //set event calendar
-        events[DateTime(timeevent.year, timeevent.month, timeevent.day)] =
-            myListString;
-
-        todoActiveIDs.clear();
-      } else {
-        AppSnackBar(
-                title: 'Load Data Failure',
-                massage: 'Please Check Contect Admin')
-            .errorSnackBar();
       }
+      controller.todoresultModels.clear();
     }
-    controller.todoresultModels.clear();
+    //}
   }
 }
 
@@ -186,7 +223,14 @@ class MobileCalendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: buildContainerbodyHello(),
+      body: SingleChildScrollView(
+        child: Container(
+            color: kBackgroundColor,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            height: MediaQuery.of(context).size.height - 50,
+            width: double.infinity,
+            child: buildContainerbodyHello()),
+      ),
     );
   }
 }
@@ -197,7 +241,7 @@ Widget buildContainerbodyHello() {
     future: loadDataallEvent2(),
     builder: (BuildContext context, AsyncSnapshot snapshot) {
       return Container(
-        color: const Color.fromARGB(255, 255, 255, 255),
+        color: kBackgroundColor, //const Color.fromARGB(255, 255, 255, 255),
         child: Calendar(
           startOnMonday: false,
           events: events,
@@ -207,12 +251,15 @@ Widget buildContainerbodyHello() {
           selectedColor: kPrimaryColor.withOpacity(0.4),
           todayColor: Colors.red,
           eventColor: Colors.red,
-          locale: 'en_US',
+          locale: 'th_TH',
           todayButtonText: ' ',
-          isExpanded: false,
+          isExpanded: true,
           expandableDateFormat: 'EEEE, dd. MMMM yyyy',
+          weekDays: const ['จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส', 'อา'],
           dayOfWeekStyle: const TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w800, fontSize: kDefaultFont),
+              color: Colors.black,
+              fontWeight: FontWeight.w800,
+              fontSize: kDefaultFont),
           eventListBuilder:
               (BuildContext context, List<CleanCalendarEvent> events) {
             return Expanded(
@@ -230,18 +277,22 @@ Widget buildContainerbodyHello() {
                   final String endtime = DateFormat('d/M/y HH:mm')
                       .format(event.endTime)
                       .toString();
-                  final String imagedate =
-                      DateFormat('yyyyMMdd').format(event.startTime).toString();
-
+                  // String end2 = '';
+                  // if (event.todostatus == 1 ) {
+                  //   end2 = '00:00';
+                  // } else {
+                  //   end2 = end;
+                  // }
                   return Generatelist(
-                    event: event,
-                    start: start,
-                    end: end,
-                    starttime: starttime,
-                    endtime: endtime,
-                    todoid: event.todoid,
-                    imagedate: imagedate,
-                  );
+                      event: event,
+                      start: start,
+                      end: end,
+                      starttime: starttime,
+                      endtime: endtime,
+                      todoid: event.todoid,
+                      imageid: event.image,
+                      imagedate: event.startTime,
+                      todoresultid: event.todoresultid);
                 },
                 itemCount: events.length,
               ),
@@ -263,7 +314,9 @@ class Generatelist extends StatefulWidget {
     required this.starttime,
     required this.endtime,
     required this.todoid,
+    required this.imageid,
     required this.imagedate,
+    required this.todoresultid,
   });
 
   final CleanCalendarEvent event;
@@ -272,26 +325,51 @@ class Generatelist extends StatefulWidget {
   final String starttime;
   final String endtime;
   final int todoid;
-  final String imagedate;
+  final String imageid;
+  final DateTime imagedate;
+  final String todoresultid;
 
   @override
   State<Generatelist> createState() => _GeneratelistState();
 }
 
 class _GeneratelistState extends State<Generatelist> {
-  // void loadDatafileupload() async {
-  //   await AppService().readFileUpload('${widget.event.todoid}');
-  //   if (controller.fileuploadModels.isNotEmpty) {
-  //     imageUrl = controller.fileuploadModels.last.image;
-  //     Name = controller.fileuploadModels.last.name;
-  //     Remark = controller.fileuploadModels.last.remark;
-  //   }
-  // }
+  String fileupload = '';
+  String fileuploadname = '';
+  String fileuploadRemark = '';
+
+  void loadDatafileupload() async {
+    //ใช้กรณี อยากให้เป็นการเข้าเยี่ยมครั้งเดียว
+    // await AppService().readFileUpload('${widget.event.todoid}');
+    if (controller.fileuploadModels.isNotEmpty) {
+      fileupload = controller.fileuploadModels.last.image;
+      fileuploadname = controller.fileuploadModels.last.name;
+      fileuploadRemark = controller.fileuploadModels.last.remark;
+    }
+  }
+
+  loadFile() async {
+    fileupload = '';
+    fileuploadname = '';
+    fileuploadRemark = '';
+    if (widget.imageid.isNotEmpty && widget.todoresultid.isNotEmpty) {
+      // controller.fileuploadModels.clear();
+      await AppService().readFileUpload(_auth!.uid, '${widget.todoid}',
+          widget.imagedate, widget.imageid, widget.todoresultid);
+
+      for (var i = 0; i < controller.fileuploadModels.length; i++) {
+        // if (controller.fileuploadModels[i].todoid == widget.imageid) {
+        loadDatafileupload();
+        // }
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    // loadDatafileupload();
+    loadFile();
+    // loadDatafileupload(); //ใช้กรณี อยากให้เป็นการเข้าเยี่ยมครั้งเดียว
   }
 
   @override
@@ -318,18 +396,18 @@ class _GeneratelistState extends State<Generatelist> {
             widget.start,
             style: const TextStyle(fontSize: kDefaultFont),
           ),
-          Text(widget.end,
-           style: const TextStyle(fontSize: kDefaultFont),)
+          Text(
+            widget.end,
+            style: const TextStyle(fontSize: kDefaultFont),
+          )
         ],
       ),
       onTap: () async {
-        await AppService()
-            .readFileUpload('${widget.event.todoid}', widget.imagedate);
         showModalBottomSheet<void>(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
-          backgroundColor: Colors.amber.shade50,//kTabsColor.withOpacity(0.4)
+          backgroundColor: Colors.amber.shade50, //kTabsColor.withOpacity(0.4)
           context: context,
           builder: (BuildContext context) {
             return SingleChildScrollView(
@@ -370,7 +448,6 @@ class _GeneratelistState extends State<Generatelist> {
                         // const SizedBox(
                         //   height: 5,
                         // ),
-
                         Text(
                             widget.event.description
                                 .replaceAll('[', '')
@@ -383,19 +460,19 @@ class _GeneratelistState extends State<Generatelist> {
                             style: TextStyle(
                                 fontSize: kDefaultFont,
                                 fontWeight: FontWeight.bold)),
+                        // SizedBox(
+                        //   child: fileuploadname.isNotEmpty
+                        //       ? Text(fileuploadname,
+                        //           style:
+                        //               const TextStyle(fontSize: kDefaultFont))
+                        //       : const Text(
+                        //           "",
+                        //           style: TextStyle(fontSize: 14),
+                        //         ),
+                        // ),
                         SizedBox(
-                          child: controller.fileuploadModels.isNotEmpty
-                              ? Text(controller.fileuploadModels.last.name,
-                                  style:
-                                      const TextStyle(fontSize: kDefaultFont))
-                              : const Text(
-                                  "",
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                        ),
-                        SizedBox(
-                          child: controller.fileuploadModels.isNotEmpty
-                              ? Text(controller.fileuploadModels.last.remark,
+                          child: fileuploadRemark.isNotEmpty
+                              ? Text(fileuploadRemark,
                                   style:
                                       const TextStyle(fontSize: kDefaultFont))
                               : const Text(
@@ -407,9 +484,9 @@ class _GeneratelistState extends State<Generatelist> {
                           height: 20,
                         ),
                         Center(
-                          child: controller.fileuploadModels.isNotEmpty
+                          child: fileupload.isNotEmpty
                               ? Image.network(
-                                  controller.fileuploadModels.last.image,
+                                  fileupload,
                                   fit: BoxFit.cover,
                                   width: MediaQuery.of(context).size.width,
                                   height: 250,

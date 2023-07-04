@@ -6,11 +6,14 @@ import 'dart:math';
 import 'package:checkinapp/blocs/todo_list/todo_list_bloc.dart';
 import 'package:checkinapp/models/calendarevent_model.dart';
 import 'package:checkinapp/models/checktodoresult_model.dart';
+import 'package:checkinapp/models/eventforprint_model.dart';
 import 'package:checkinapp/models/factory_all_model.dart';
 import 'package:checkinapp/models/factory_model.dart';
 import 'package:checkinapp/models/fileupload_model.dart';
+import 'package:checkinapp/models/todoresult_forporint_model.dart';
 import 'package:checkinapp/models/todoresult_model.dart';
 import 'package:checkinapp/models/user_model.dart';
+import 'package:checkinapp/models/userlist_model.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/utility/app_dialog.dart';
 import 'package:checkinapp/widgets/widget_button.dart';
@@ -29,13 +32,17 @@ class AppService {
   final db = FirebaseFirestore.instance;
   final db_todo = FirebaseFirestore.instance.collection('todolist');
 
-  Future<void> readFileUpload(String id,String datadate) async {
+  Future<void> readFileUpload(String uid, String id, DateTime datadate,
+      String imagetodoid, String todoid) async {
     controller.fileuploadModels.clear();
     await db_todo
-        .doc(_auth?.uid)
-        .collection(datadate) //DateFormat('yyyyMMdd').format(DateTime.now())
-        .doc('id$id')
+        .doc(uid)
+        .collection(DateFormat('yyyyMMdd')
+            .format(datadate)) 
+        .doc(imagetodoid)
         .collection('fileupload')
+        // .doc(imagetodoid)
+        .where('todoid', isEqualTo: imagetodoid)
         .get()
         .then((value) async {
       if (value.docs.isNotEmpty) {
@@ -43,10 +50,35 @@ class AppService {
             name: value.docs.last['name'],
             remark: value.docs.last['remark'],
             image: value.docs.last['image'],
-            uid: _auth!.uid,
-            factoryid: id);
+            uid: uid,
+            factoryid: id,
+            todoid: todoid); 
         controller.fileuploadModels.add(fileuploadModels);
       }
+    });
+  }
+
+  Future<void> updateInfoFactory(int id, String title, String subtitle,
+      String typeid, String lat, String lon, String qr) async {
+    await FirebaseFirestore.instance.collection('checkin').doc('id$id').update({
+      'position': GeoPoint(double.parse(lat), double.parse(lon)),
+      'qr': qr,
+      'subtitle': subtitle,
+      'title': title,
+      'typeid': int.parse(typeid),
+      'id': id,
+    });
+  }
+
+  Future<void> addInfoFactory(int id, String title, String subtitle,
+      String typeid, String lat, String lon, String qr) async {
+    await FirebaseFirestore.instance.collection('checkin').doc('id$id').set({
+      'position': GeoPoint(double.parse(lat), double.parse(lon)),
+      'qr': qr,
+      'subtitle': subtitle,
+      'title': title,
+      'typeid': int.parse(typeid),
+      'id': id,
     });
   }
 
@@ -79,8 +111,14 @@ class AppService {
       });
     });
   }
+
   Future<void> readInfoFactoryAll() async {
-    await db.collection('checkin').get().then((QuerySnapshot querySnapshot) {
+    controller.factoryAllModels.clear();
+    await db
+        .collection('checkin')
+        .orderBy('typeid')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         controller.factoryAllModels.add(FactoryAllModel(
             position: doc["position"],
@@ -91,22 +129,6 @@ class AppService {
             id: doc["id"]));
       });
     });
-    // await FirebaseFirestore.instance
-    //     .collection('checkin')
-    //     .where('id', isEqualTo: id) //controller.userModels.last.typeworkid
-    //     .get()
-    //     .then((QuerySnapshot querySnapshot) {
-    //   querySnapshot.docs.forEach((doc) {
-    //     controller.todoresultModels.add(FactoryAllModel(
-    //       position: doc["position"],
-    //       qr: doc["qr"],
-    //       subtitle: doc["subtitle"],
-    //       title: doc["title"],
-    //       typeid: doc["typeid"],
-    //       id: doc["id"],
-    //     ));
-    //   });
-    // });
   }
 
   Future<void> readUserModel() async {
@@ -118,6 +140,7 @@ class AppService {
     // });
 
     // After add role,email,uid,
+    controller.userModels.clear();
     await db
         .collection('user')
         .where('email', isEqualTo: _auth!.email)
@@ -139,11 +162,37 @@ class AppService {
     });
   }
 
-  Future<void> CheckTodoResultModel(int eventid, String datadate) async {
+  Future<void> readUserListModel() async {
+    controller.userlistModels.clear();
+    await db.collection('user').orderBy('email').get().then((value) async {
+      if (value.docs.isNotEmpty) {
+        for (var i = 0; i < value.docs.length; i++) {
+          await db.collection('user').doc(value.docs[i].id).get().then(
+            (val) {
+              var array = val['todo']; // array is now List<dynamic>
+              List<String> strings = List<String>.from(array);
+              UserListModel userlistModels = UserListModel(
+                email: val['email'],
+                name: val['name'],
+                role: val['role'],
+                todo: strings,
+                uid: val['uid'],
+                typeworkid: val['typeid'],
+              );
+              controller.userlistModels.add(userlistModels);
+            },
+          );
+        }
+      }
+    });
+  }
+
+  Future<void> CheckTodoResultModel(
+      int eventid, String datadate, String docid) async {
     List<String> resultdocid = [];
     // var formattedDate = DateFormat('yyyyMMdd').format(DateTime.now());
     //Check type from page / 0 = calendar / >0 = todolist_state
-    if (eventid == 0) {
+    if (eventid == 0 && docid.isNotEmpty) {
       //  เป็นการ insert collection ต่อท้ายของตัว Checkin int eventid,
       // await db_todo
       //     .doc("id$eventid")
@@ -163,47 +212,58 @@ class AppService {
       //   }
       // });
 
-      // เป็นการ insert collection แยก ไม่ต่อท้ายตัวไหน ขึ้นใหม่เลย
-      await db_todo
-          .doc(_auth?.uid)
-          .collection(datadate)
-          // .doc("checkinid$eventid")
-          .get()
-          .then((value) {
-        value.docs.forEach((doc) {
-          resultdocid.add(doc.id);
-        });
-        controller.checktodoresultModels.clear();
-        if (value.docs.isEmpty) {
-          CheckTodoResultModels checktodoresultModels = CheckTodoResultModels(
-              result: (0),
-              resultcheckinid: resultdocid,
-              collectiondate: datadate);
-          controller.checktodoresultModels.add(checktodoresultModels);
-        } else {
-          CheckTodoResultModels checktodoresultModels = CheckTodoResultModels(
-              result: (1),
-              resultcheckinid: resultdocid,
-              collectiondate: datadate);
-          controller.checktodoresultModels.add(checktodoresultModels);
-        }
-      });
+      // // เป็นการ select todolist result
+      // await db_todo
+      //     .doc(_auth?.uid)
+      //     .collection(datadate)
+      //     .doc(docid)
+      //     // .doc("checkinid$eventid")
+      //     .get()
+      //     .then((value) {
+      //   if (value.data() != null) {
+      //     Map<String, dynamic> data = value.data() as Map<String, dynamic>;
+      //     print(data);
+      //     // value.docs.forEach((doc) {
+      //       resultdocid.add(docid);
+      //     // });
+      //     // controller.checktodoresultModels.clear();
+      //     // if (value.docs.isEmpty) {
+      //     //   CheckTodoResultModels checktodoresultModels = CheckTodoResultModels(
+      //     //       result: (0),
+      //     //       resultcheckinid: resultdocid,
+      //     //       collectiondate: datadate);
+      //     //   controller.checktodoresultModels.add(checktodoresultModels);
+      //     // } else {
+      //       }
+      //       CheckTodoResultModels checktodoresultModels = CheckTodoResultModels(
+      //           result: (1),
+      //           resultcheckinid: resultdocid,
+      //           collectiondate: datadate);
+      //       controller.checktodoresultModels.add(checktodoresultModels);
+
+      // }
+
+      // });
     } else {
       // เป็นการ insert collection แยก ไม่ต่อท้ายตัวไหน ขึ้นใหม่เลย
       await db_todo //.where('uidCheck', isEqualTo: _auth!.uid)
           .doc(_auth?.uid)
           .collection(datadate)
-          .doc("id$eventid")
+          .where('checkinid', isEqualTo: eventid)
+          .where('todostatus', isEqualTo: 1)
+          // .doc("$eventid")
           .get()
           .then((value) {
         controller.checktodoresultModels.clear();
-        if (value.data() == null) {
+        resultdocid = [];
+        if (value.docs.isEmpty) {
           CheckTodoResultModels checktodoresultModels = CheckTodoResultModels(
               result: (0),
               resultcheckinid: resultdocid,
-              collectiondate: datadate);
+              collectiondate: datadate,);
           controller.checktodoresultModels.add(checktodoresultModels);
         } else {
+          resultdocid.add(value.docs[0].id);
           CheckTodoResultModels checktodoresultModels = CheckTodoResultModels(
               result: (1),
               resultcheckinid: resultdocid,
@@ -247,10 +307,97 @@ class AppService {
             timestampIn: data['timestampIn'],
             timestampOut: data['timestampOut'],
             finishtodo: finishtodos,
-            checkinid: data['checkinid']);
+            checkinid: data['checkinid'],
+            image: eventid,
+            todostatus: data['todostatus'],
+            todoresultid:data['image'] ?? ''); 
+
         controller.todoresultModels.add(todoresultModels);
+        finishtodos = [];
       }
     });
+  }
+
+  Future<void> readTodoResultforPrintModel(String uid, String startdate,
+      String enddate, String username, List<String> todoname) async {
+    controller.alleventforpirntModels.clear();
+    controller.todoresultforprintModels.clear();
+    String formattedDate =
+        DateFormat('yyyyMM').format(DateTime.parse(startdate));
+    DateTime st = DateTime.parse(startdate);
+    DateTime en = DateTime.parse(enddate);
+    List<bool> todos = [];
+    List<String> finishtodos = [];
+    List<String> finishtodosid = [];
+    // DateTime dataDate = DateTime(st.year, st.month, st.day);
+    // DateTime dataDate2 = DateTime(en.year, en.month, en.day);
+    // int inDays = dataDate2.difference(dataDate).inDays;
+
+    String d = '';
+    for (var i = st.day; i <= en.day; i++) {
+      if (i < 10) {
+        d = '${formattedDate}0$i';
+      } else {
+        d = '$formattedDate$i';
+      }
+      // set data result date save
+      await db_todo.doc(uid).collection(d).orderBy('timestampIn').get().then(
+        //.orderBy('checkinid')
+        (querySnapshot) async {
+          if (querySnapshot.docs.isNotEmpty) {
+            finishtodos.add(d);
+            for (var x = 0; x < querySnapshot.docs.length; x++) {
+              finishtodosid.add('$d-${querySnapshot.docs[x].id}');
+
+              await db_todo
+                  .doc(uid)
+                  .collection(d)
+                  .doc(querySnapshot.docs[x].id)
+                  .get()
+                  .then((value) {
+                if (value.data() != null) {
+                  Map<String, dynamic> data =
+                      value.data() as Map<String, dynamic>;
+                  todos = [];
+                  for (var i = 0; i < data['finishtodo'].length; i++) {
+                    if (data['finishtodo'][i] == true) {
+                      todos.add(true);
+                    } else {
+                      todos.add(false);
+                    }
+                  }
+                  TodoResultForPrintModels todoresultforprintModels =
+                      TodoResultForPrintModels(
+                          uidCheck: data['uidCheck'],
+                          timestampIn: data['timestampIn'],
+                          timestampOut: data['timestampOut'],
+                          finishtodo: todos,
+                          checkinid: data['checkinid'],
+                          image: data['image'] ?? '', //querySnapshot.docs[x].id
+                          todostatus: data['todostatus'],
+                          todo: todoname,
+                          todoid: querySnapshot.docs[x].id);
+
+                  controller.todoresultforprintModels
+                      .add(todoresultforprintModels);
+                }
+              });
+            }
+          }
+        },
+        onError: (e) => print("Error completing: $e"),
+      );
+    }
+
+    // set data CalendarAllEvent
+    AlleventforPrint alleventforpirntModels = AlleventforPrint(
+        uidCheck: uid,
+        dataDate: finishtodos,
+        finishtodosid: finishtodosid,
+        name: username,
+        beginDate: startdate,
+        endDate: enddate);
+    controller.alleventforpirntModels.add(alleventforpirntModels);
   }
 
   Future<void> readCalendarallEventModel(String uid, int days) async {
@@ -277,13 +424,13 @@ class AppService {
     controller.calendaralleventModels.add(calendaralleventModels);
   }
 
-  Future<void> readCalendarallEventModel2(String uid) async {
-    var formattedDate = DateFormat('yyyyMM').format(DateTime.now());
+  Future<void> readCalendarallEventModel2(String uid,DateTime datadate) async {
+    var formattedDate = DateFormat('yyyyMM').format(datadate);
     List<String> finishtodos = [];
     List<String> finishtodosid = [];
-    DateTime dataDate = DateTime(DateTime.now().year, DateTime.now().month, 0);
+    DateTime dataDate = DateTime(datadate.year, datadate.month, 0);
     DateTime dataDate2 =
-        DateTime(DateTime.now().year, DateTime.now().month + 1, 0);
+        DateTime(datadate.year, datadate.month + 1, 0);
     int inDays = dataDate2.difference(dataDate).inDays;
     String d = '';
     for (var i = 1; i <= inDays; i++) {
@@ -314,7 +461,8 @@ class AppService {
     controller.calendaralleventModels.add(calendaralleventModels);
   }
 
-  double calculateDistance(double lat2, double lng2, RxList<Position> position) {
+  double calculateDistance(
+      double lat2, double lng2, RxList<Position> position) {
     double distance = 0.0;
     if (position.isNotEmpty) {
       double lat1 = controller.position.last.latitude;
@@ -392,10 +540,11 @@ class AppService {
 
   void PermissionDialog(BuildContext context) {
     AppDialog(context: context).normalDialog(
-        title: 'Permission Location',
-        content: 'Warning!',
+        title:
+            'กรุณาอนุญาตให้ Checkin-in App ระบุตำแหน่ง ', //Permission Location
+        content: 'แจ้งเตือน!',
         firstAction: WidgetButton(
-          label: 'Permission',
+          label: 'ตั้งค่าสิทธิ์', //Open Permission
           pressFunc: () {
             Geolocator.openAppSettings();
             exit(0);
@@ -403,13 +552,15 @@ class AppService {
         ));
   }
 
-  void ClearActivetodo(BuildContext context)  {
-    for (var i = 0;
-        i < controller.todoresultModels.last.finishtodo.length;
-        i++) {
-      if (controller.todoresultModels.last.finishtodo[i] == true) {
-        context.read<TodoListBloc>().add(ToggleTodoEvent('$i'));
-      }
+  void ClearActivetodo(BuildContext context) {
+    for (var i = 0; i < controller.userModels.last.todo.length; i++) {
+      context.read<TodoListBloc>().add(ClearTodoEvent('$i'));
     }
+  }
+
+  int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (to.difference(from).inHours / 24).round();
   }
 }

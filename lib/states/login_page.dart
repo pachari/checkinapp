@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:checkinapp/states/singin_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/utility/app_service.dart';
 import 'package:checkinapp/widgets/widget_barbutton.dart';
@@ -73,7 +74,7 @@ class _LoginAppState extends State<LoginApp> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const SizedBox(
-                      height: 50,
+                      height: 25,
                     ),
                     const Text(
                       "CHECK-IN",
@@ -87,26 +88,32 @@ class _LoginAppState extends State<LoginApp> {
                     //       "assets/lottie/144705-a-boat-on-the-river.json"),
                     // ),
                     const SizedBox(
-                      height: 40,
+                      height: 5,
                     ),
                     const Text(
                       "Please Login to Your Account",
                       style: TextStyle(
                         color: Colors.grey,
-                        fontSize: kDefaultFont,
+                        fontSize: 12,
                       ),
+                    ),
+                    const SizedBox(
+                      height: 10,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         WidgetForm(
                             marginTop: 10,
-                            hint: 'Email Address',
+                            hint: 'Your email',
                             textEditingController: emailController,
                             // iconController: const Icon( FontAwesomeIcons.envelope, color: kTrushColor),
                             iconController: IconButton(
-                                icon: const Icon(FontAwesomeIcons.envelope,
-                                    color: kTrushColor,size: 20,),
+                                icon: const Icon(
+                                  FontAwesomeIcons.envelope,
+                                  color: kTrushColor,
+                                  size: 20,
+                                ),
                                 onPressed: () {}),
                             obscureTextController: false),
                       ],
@@ -115,16 +122,18 @@ class _LoginAppState extends State<LoginApp> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         WidgetForm(
-                            marginTop: 12,
-                            hint: 'Password',
+                            marginTop: 10,
+                            hint: 'Your password',
                             textEditingController: passwordController,
                             // iconController: const Icon( FontAwesomeIcons.eyeSlash, color: kTrushColor),
                             iconController: IconButton(
                               icon: Icon(
-                                  _passwordVisible
-                                      ? FontAwesomeIcons.eyeSlash
-                                      : FontAwesomeIcons.eye,
-                                  color: kTrushColor,size: 20,),
+                                _passwordVisible
+                                    ? FontAwesomeIcons.eyeSlash
+                                    : FontAwesomeIcons.eye,
+                                color: kTrushColor,
+                                size: 20,
+                              ),
                               onPressed: () {
                                 setState(() {
                                   _passwordVisible = !_passwordVisible;
@@ -135,89 +144,17 @@ class _LoginAppState extends State<LoginApp> {
                       ],
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 10,
                     ),
-                    // Padding(
-                    //   padding: const EdgeInsets.fromLTRB(20, 0, 30, 0),
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.end,
-                    //     children: [
-                    //       TextButton(
-                    //         onPressed: click,
-                    //         child: const Text(
-                    //           "Forget Password",
-                    //           style: TextStyle(color: Colors.deepOrange),
-                    //         ),
-                    //       )
-                    //     ],
-                    //   ),
-                    // ),
-                    GestureDetector(
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: 250,
-                        decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(50)),
-                            gradient: LinearGradient(
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                                colors: [
-                                  Color(0xFF8A2387),
-                                  Color(0xFFE94057),
-                                  Color(0xFFF27121),
-                                ])),
-                        child: const Padding(
-                          padding: EdgeInsets.all(12.0),
-                          child: Text(
-                            'Login',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                      onTap: () {
-                        if ((emailController.text.isEmpty) ||
-                            (passwordController.text.isEmpty)) {
-                          AppSnackBar(
-                                  title: 'Login Failure',
-                                  massage: 'Please Check Email or Password.')
-                              .errorSnackBar();
-                        } else {
-                          signIn();
-                        }
-                      },
-                    ),
+                    buildButtonLogin(),
+                    buildOtherLine(),
                     const SizedBox(
-                      height: 17,
+                      height: 5,
                     ),
-                    // const Text("Or Login using Social Media Account",
-                    //   style: TextStyle(
-                    //       fontWeight: FontWeight.bold
-                    //   ),),
-                    // const SizedBox(height: 15,),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    //   children: [
-                    //     IconButton(
-                    //         onPressed: click,
-                    //         icon: const Icon(FontAwesomeIcons.facebook,color: Colors.blue)
-                    //     ),
-                    //     IconButton(
-                    //         onPressed: click,
-                    //         icon: const Icon(FontAwesomeIcons.google,color: Colors.redAccent,)
-                    //     ),
-                    //     IconButton(
-                    //         onPressed: click,
-                    //         icon: const Icon(FontAwesomeIcons.twitter,color: Colors.orangeAccent,)
-                    //     ),
-                    //     IconButton(
-                    //         onPressed: click,
-                    //         icon: const Icon(FontAwesomeIcons.linkedinIn,color: Colors.green,)
-                    //     )
-                    //   ],
-                    // )
+                    buildButtonRegister(),
+                    const SizedBox(
+                      height: 10,
+                    ),
                   ],
                 ),
               )
@@ -288,5 +225,82 @@ class _LoginAppState extends State<LoginApp> {
         //             )));
       });
     }
+  }
+
+  Widget buildOtherLine() {
+    return Container(
+        margin: const EdgeInsets.only(top: 16),
+        child: Row(children: <Widget>[
+          Expanded(child: Divider(color: Colors.green[800])),
+          const Padding(
+              padding: EdgeInsets.all(6),
+              child: Text("Don’t have an account?",
+                  style: TextStyle(color: Colors.black87))),
+          Expanded(child: Divider(color: Colors.green[800])),
+        ]));
+  }
+
+  GestureDetector buildButtonRegister() {
+    return GestureDetector(
+      child: Container(
+        alignment: Alignment.center,
+        width: 280,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16), color: Colors.red[400]),
+        child: const Padding(
+          padding: EdgeInsets.all(12.0),
+          child: Text(
+            'Sign up',
+            style: TextStyle(color: Colors.white, fontSize: kDefaultFont),
+          ),
+        ),
+      ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SingInApp()),
+        );
+      },
+    );
+  }
+
+  GestureDetector buildButtonLogin() {
+    return GestureDetector(
+      child: Container(
+        alignment: Alignment.center,
+        width: 280,
+        decoration: BoxDecoration(
+            borderRadius:
+                const BorderRadius.all(Radius.circular(kDefaultCircular)),
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  kPrimaryColor.withOpacity(0.8),
+                  kPrimaryColor.withOpacity(0.8),
+                  // Color(0xFF8A2387),
+                  // Color(0xFFE94057),
+                  // Color(0xFFF27121),
+                ])),
+        child: const Padding(
+          padding: EdgeInsets.all(12.0),
+          child: Text(
+            'Login',
+            style: TextStyle(color: Colors.white, fontSize: kDefaultFont),
+          ),
+        ),
+      ),
+      onTap: () {
+        if ((emailController.text.isEmpty) ||
+            (passwordController.text.isEmpty)) {
+          AppSnackBar(
+                  title: 'Login Failure',
+                  massage: 'Please Check Email or Password.')
+              .errorSnackBar();
+        } else {
+          signIn();
+        }
+      },
+    );
   }
 }

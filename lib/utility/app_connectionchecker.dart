@@ -2,18 +2,22 @@
 
 import 'dart:io';
 import 'package:app_settings/app_settings.dart';
-// import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/models/user_model.dart';
-import 'package:checkinapp/states/login.dart';
+// import 'package:checkinapp/componants/constants.dart';
+// import 'package:checkinapp/models/user_model.dart';
+import 'package:checkinapp/states/login_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/utility/app_dialog.dart';
 import 'package:checkinapp/utility/app_networkconnectivity.dart';
 import 'package:checkinapp/utility/app_service.dart';
+// import 'package:checkinapp/utility/app_service.dart';
 import 'package:checkinapp/widgets/widget_barbutton.dart';
 import 'package:checkinapp/widgets/widget_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +32,7 @@ class ConnectionCheckerDemo extends StatefulWidget {
 
 class _ConnectionCheckerDemoState extends State<ConnectionCheckerDemo> {
   AppController controller = Get.put(AppController());
-  String initRoute = '/loginapp';
+  // String initRoute = '/loginapp';
   Map _source = {ConnectivityResult.none: false};
   final NetworkConnectivity _networkConnectivity = NetworkConnectivity.instance;
   String string = '';
@@ -69,9 +73,12 @@ class _ConnectionCheckerDemoState extends State<ConnectionCheckerDemo> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Center(child: Image.asset("assets/icons/icon.png", width: 120)),
-        const SizedBox(height: 20,),
-        Center(child: Image.asset("assets/images/98891-insider-loading.gif", width: 100)),
-        
+        const SizedBox(
+          height: 20,
+        ),
+        Center(
+            child: Image.asset("assets/images/98891-insider-loading.gif",
+                width: 100)),
       ],
     ));
   }
@@ -114,10 +121,11 @@ class _ConnectionCheckerDemoState extends State<ConnectionCheckerDemo> {
     if (_source.keys.toList()[0] == ConnectivityResult.none) {
       showDialogBox();
     } else {
-      // await Firebase.initializeApp().then((value) async {
-         FirebaseAuth.instance.authStateChanges().listen((event) async {
+      if (controller.userModels.isEmpty) {
+        // // await Firebase.initializeApp().then((value) async {
+        FirebaseAuth.instance.authStateChanges().listen((event) async {
           if (event != null) {
-            //login
+            //       //login
             await FirebaseFirestore.instance
                 .collection('user')
                 .doc(event.uid)
@@ -136,46 +144,50 @@ class _ConnectionCheckerDemoState extends State<ConnectionCheckerDemo> {
                 typeworkid: data['typeid'],
               );
               controller.userModels.add(userModel);
+              await AppService().readInfoFactoryAll();
               //เช็คว่าวันไหนมีการบันทึกรายการบ้าง
-              await AppService().readCalendarallEventModel2(userModel.uid);
+              await AppService().readCalendarallEventModel2(userModel.uid,DateTime.now());
 
-              switch (userModel.role) {
+              switch (controller.userModels.last.role) {
                 case 'admin':
-                  Get.offAll(() =>
-                      const WidgetBarItem(currentPage: 0, roleUser: 'admin'));
-                  // initRoute = '/serviceAdmin';
-                  // runApp(const MyApp());
+                  Get.offAll(() => const WidgetBarItem(currentPage: 0, roleUser: 'admin'));
                   break;
                 case 'maid':
                   Get.offAll(() =>
                       const WidgetBarItem(currentPage: 0, roleUser: 'maid'));
-
-                  // initRoute = '/serviceMaid';
-                  // runApp(const MyApp());
                   break;
                 case 'security':
                   Get.offAll(() => const WidgetBarItem(
                       currentPage: 0, roleUser: 'security'));
-
-                  // initRoute = '/serviceSecurity';
-                  // runApp(const MyApp());
                   break;
                 default:
                   Get.offAll(() => const LoginApp());
-                  // initRoute = '/singup';
-                  // runApp(const MyApp());
                   break;
               }
             });
           } else {
             Get.offAll(() => const LoginApp());
-            // New login
-            // runApp(const WelcomeScreen());
-            // runApp(const MyApp());
           }
         });
-      // }
-      // );
+      } else {
+        switch (controller.userModels.last.role) {
+          case 'admin':
+            Get.offAll(
+                () => const WidgetBarItem(currentPage: 0, roleUser: 'admin'));
+            break;
+          case 'maid':
+            Get.offAll(
+                () => const WidgetBarItem(currentPage: 0, roleUser: 'maid'));
+            break;
+          case 'security':
+            Get.offAll(() =>
+                const WidgetBarItem(currentPage: 0, roleUser: 'security'));
+            break;
+          default:
+            Get.offAll(() => const LoginApp());
+            break;
+        }
+      }
     }
   }
 }

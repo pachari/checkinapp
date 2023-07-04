@@ -144,7 +144,7 @@ class _AddItemState extends State<AddItem> {
           "รายการกิจกรรม",
           style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 18,
+              fontSize: kDefaultFont,
               color: Color.fromARGB(255, 255, 255, 255)),
         ),
       ),
@@ -318,11 +318,12 @@ class _AddItemState extends State<AddItem> {
           remark: itemRemark,
           image: imageUrl,
           uid: user!.uid,
-          factoryid: '${widget.factoryModel.id}');
+          factoryid: '${widget.factoryModel.id}',
+          todoid:'${widget.factoryModel.id}');
       controller.fileuploadModels.add(fileuploadModels);
       //Add a new item
       await _reference
-          .doc('id${widget.factoryModel.id}')
+          .doc('${widget.factoryModel.id}')
           .collection('fileupload')
           .add(dataToSend);
 

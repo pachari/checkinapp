@@ -1,8 +1,8 @@
 
 
 // import 'package:checkinapp/states/states_authen.dart';
-import 'package:checkinapp/states/states_singin.dart';
-import 'package:checkinapp/states/login.dart';
+import 'package:checkinapp/states/singin_page.dart';
+import 'package:checkinapp/states/login_page.dart';
 import 'package:checkinapp/utility/app_connectionchecker.dart';
 // import 'package:checkinapp/utility/app_connectionchecker.dart';
 import 'package:checkinapp/widgets/widget_barbutton.dart';
