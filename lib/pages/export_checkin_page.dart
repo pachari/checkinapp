@@ -1,8 +1,8 @@
-// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously, avoid_print
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously, avoid_print, unused_element
 
 import 'package:checkinapp/componants/constants.dart';
-import 'package:checkinapp/states/login_page.dart';
-import 'package:checkinapp/states/print_page.dart';
+import 'package:checkinapp/pages/login_page.dart';
+import 'package:checkinapp/pages/print_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/utility/app_service.dart';
 import 'package:checkinapp/utility/app_snackbar.dart';
@@ -28,9 +28,10 @@ class _ExportCheckInAppState extends State<ExportCheckInApp> {
   TextEditingController enddateController = TextEditingController();
 
   final List<String> _typeExport = ['PDF', 'CSV', 'XLS'];
+    String _selecttypeExport = "";
+
   final List<String> _ListUser = [];
   String _selectValListUser = "";
-  String _selecttypeExport = "";
   int _selectIndexListUser = 0;
 
   void loaddata() {
@@ -46,8 +47,8 @@ class _ExportCheckInAppState extends State<ExportCheckInApp> {
     loaddata();
     _selectValListUser = _ListUser[0];
     _selecttypeExport = _typeExport[0];
-    strdateController.text = "2023-06-16";
-    enddateController.text = "2023-06-30";
+    strdateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());//"2023-06-16";
+    enddateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());//"2023-06-30";
   }
 
   @override
@@ -193,14 +194,13 @@ class _ExportCheckInAppState extends State<ExportCheckInApp> {
         DateTime.parse(enddateController.text));
 
     if (a > 0) {
-     
-      _onLoading();
+      // _onLoading();
       await AppService().readTodoResultforPrintModel(
           controller.userlistModels[_selectIndexListUser].uid,
           strdateController.text,
           enddateController.text,
           controller.userlistModels[_selectIndexListUser].email,
-          controller.userlistModels[_selectIndexListUser].todo);      
+          controller.userlistModels[_selectIndexListUser].todo);
       // Navigator.pop(context);
       Navigator.push(
         context,
@@ -219,10 +219,10 @@ class _ExportCheckInAppState extends State<ExportCheckInApp> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return  const Dialog(
+        return const Dialog(
           child: SizedBox(
             height: 70,
-            child:  Padding(
+            child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -240,7 +240,7 @@ class _ExportCheckInAppState extends State<ExportCheckInApp> {
         );
       },
     );
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 1), () {
       Navigator.pop(context); //pop dialog
       // _login();
     });
@@ -281,7 +281,7 @@ class _ExportCheckInAppState extends State<ExportCheckInApp> {
         "ตกลง",
       ),
       onPressed: () {
-        Get.offAll(() => const LoginApp());
+        Get.offAll(() => const LoginAndSignup());
       },
     );
     // set up the AlertDialog
@@ -351,13 +351,7 @@ class _ExportCheckInAppState extends State<ExportCheckInApp> {
             lastDate: DateTime(2101));
 
         if (pickedDate != null) {
-          // print(
-          //     pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
           String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
-          // print(
-          //     formattedDate); //formatted date output using intl package =>  2021-03-16
-          //you can implement different kind of Date Format here according to your requirement
-
           setState(() {
             controller.text =
                 formattedDate; //set output date to TextField value.

@@ -250,7 +250,6 @@ class HomePageState extends State<HomePage> {
                           factory.position.longitude,
                           controller.position);
                       print('dis ==> $distance');
-                      //  Get.offAll(() => const AddItem());
                       if (distance <= 50.0 && distance > 0) {
                         
                         //test

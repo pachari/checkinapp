@@ -1,9 +1,8 @@
 // ignore_for_file: avoid_function_literals_in_foreach_calls, non_constant_identifier_names, avoid_print, duplicate_ignore, use_build_context_synchronously
-
 import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/componants/responsive.dart';
 import 'package:checkinapp/utility/app_snackbar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
 import 'package:get/get.dart';
@@ -18,6 +17,7 @@ class CalendarApp extends StatefulWidget {
   State<CalendarApp> createState() => _CalendarAppState();
 }
 
+// final _auth = FirebaseAuth.instance.currentUser;
 // document id
 List<String> docLists = [];
 List<String> todoActiveIDs = [];
@@ -28,33 +28,139 @@ AppController controller = Get.put(AppController());
 String imageUrl = '';
 String Name = '';
 String Remark = '';
-final _auth = FirebaseAuth.instance.currentUser;
+
+bool _searchBoolean = false;
+List<int> _searchIndexList = [];
+
+List<String> _ListUser = [];
+String? _selectValuid = "";
+String? _selectValname = "";
+String? _selectValrole = "";
+String? checkselectValuid = "";
+
+DateTime _selectDate = DateTime.now();
+bool _searchBooleanmonth = false;
+
+void loaddata() async {
+  if (controller.userlistModels.isEmpty) {
+    await AppService().readUserListModel();
+    for (var i = 0; i < controller.userlistModels.length; i++) {
+      _ListUser.add(controller.userlistModels[i].name.toString().toLowerCase());
+    }
+  }
+}
+
+void setdataEvent(DateTime date) async {
+  if (controller.calendaralleventModels.isNotEmpty &&
+      _selectValuid == checkselectValuid) {
+    var checkmonth = DateFormat('yyyyMM').format(date);
+    _searchBooleanmonth = false;
+    for (var i = controller.calendaralleventModels.last.datamonth.length - 1;
+        i >= 0;
+        i--) {
+      if (controller.calendaralleventModels.last.datamonth[i] == checkmonth) {
+        _searchBooleanmonth = true;
+      }
+    }
+    // int a = AppService().daysBetween(DateTime.now(), date);
+    // if (_selectValuid != _auth!.uid && _selectValuid != checkselectValuid ) {
+
+    // }
+    if (_searchBooleanmonth == false) {
+      //_checkdatemonth != a || _checkselectValuid != _selectValuid
+      //&& _selectValuid != _auth!.uid
+      // _checkdatemonth = a;
+      controller.calendaralleventModels.clear();
+      events.clear();
+      checkselectValuid = _selectValuid;
+
+      await AppService().readCalendarallEventModel2(_selectValuid!, date);
+      buildContainerbodyHello();
+    }
+  } else {
+    controller.calendaralleventModels.clear();
+    events.clear();
+    checkselectValuid = _selectValuid;
+    await AppService().readCalendarallEventModel2(_selectValuid!, date);
+    buildContainerbodyHello();
+  }
+}
 
 class _CalendarAppState extends State<CalendarApp> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+
   @override
   void initState() {
     super.initState();
     // loadDataallEvent(); //Before
     // loadDataallEvent2(); //After
-    _handleNewDate(DateTime(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day));
+    _selectValuid = controller.userModels.last.uid;
+    _selectValname = controller.userModels.last.name;
+    _selectValrole = controller.userModels.last.role;
+    checkselectValuid = controller.userModels.last.uid;
+    loaddata();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: kPrimaryColor,
-        title: const Text(
-          "ประวัติ",
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: Color.fromARGB(255, 255, 255, 255)),
+  Widget _searchTextField() {
+    return TextField(
+      onChanged: (String s) {
+        setState(() {
+          _searchIndexList = [];
+          for (int i = 0; i < _ListUser.length; i++) {
+            if (_ListUser[i].contains(s.toLowerCase())) {
+              _searchIndexList.add(i);
+            }
+          }
+        });
+      },
+      autofocus: true,
+      cursorColor: Colors.black,
+      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold
+          // fontSize: 20,
+          ),
+      textInputAction: TextInputAction.search,
+      decoration: const InputDecoration(
+        enabledBorder:
+            UnderlineInputBorder(borderSide: BorderSide(color: Colors.red)),
+        focusedBorder:
+            UnderlineInputBorder(borderSide: BorderSide(color: Colors.red)),
+        hintText: 'Search',
+        hintStyle: TextStyle(
+          color: Color.fromARGB(153, 58, 56, 56),
+          // fontSize: 20,
         ),
       ),
-      body: SafeArea(
+    );
+  }
+
+  Widget _searchListView() {
+    return ListView.builder(
+        itemCount: _searchIndexList.length,
+        itemBuilder: (context, index) {
+          index = _searchIndexList[index];
+          return Card(
+              child: ListTile(
+            title: Text(_ListUser[index]),
+            onTap: () async {
+              setState(() {
+                _selectValuid = controller.userlistModels[index].uid;
+                _selectValname = controller.userlistModels[index].name;
+                _searchBoolean = false;
+              });
+              setdataEvent(_selectDate);
+            },
+          ));
+        });
+  }
+
+  Widget _defaultListView() {
+    return RefreshIndicator(
+      key: _refreshIndicatorKey,
+      onRefresh: () {
+        return Future<void>.delayed(const Duration(seconds: 3));
+      },
+      child: SafeArea(
         child: Responsive(
           mobile: const MobileCalendar(),
           desktop: SingleChildScrollView(
@@ -92,44 +198,77 @@ class _CalendarAppState extends State<CalendarApp> {
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: kPrimaryColor,
+          title: !_searchBoolean
+              ? Text(
+                  "ประวัติ $_selectValname",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Color.fromARGB(255, 255, 255, 255)),
+                )
+              : _searchTextField(),
+          actions: _selectValrole != 'admin' || _selectValrole == ''
+              ? [
+                  // IconButton(
+                  //     icon: const Icon(
+                  //       Icons.clear,
+                  //       color: kPrimaryColor,
+                  //     ),
+                  //     onPressed: () {
+                  //       setState(() {
+                  //         _searchBoolean = false;
+                  //       });
+                  //     })
+                ]
+              : (!_searchBoolean
+                  ? [
+                      IconButton(
+                          icon: const Icon(Icons.search),
+                          onPressed: () {
+                            setState(() {
+                              _searchBoolean = true;
+                              _searchIndexList = [];
+                            });
+                          })
+                    ]
+                  : [
+                      IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              _searchBoolean = false;
+                            });
+                          })
+                    ]),
+        ),
+        // floatingActionButton: FloatingActionButton.extended(
+        //   onPressed: () {
+        //     _refreshIndicatorKey.currentState?.show();
+        //   },
+        //   icon: const Icon(Icons.refresh),
+        //   label: const Text('refresh'),
+        //   backgroundColor:kPrimaryColor
+        // ),
+        body: !_searchBoolean ? _defaultListView() : _searchListView());
+  }
 }
 
 void _handleNewDate(date) async {
   //ignore: avoid_print
   print('Date selected: $date');
-  // showDialog(
-  //   context: context,
-  //   barrierDismissible: false,
-  //   builder: (BuildContext context) {
-  //     return const Dialog(
-  //       child: SizedBox(
-  //         height: 70,
-  //         child: Padding(
-  //           padding: EdgeInsets.all(8.0),
-  //           child: Row(
-  //             mainAxisSize: MainAxisSize.min,
-  //             mainAxisAlignment: MainAxisAlignment.center,
-  //             children: [
-  //               CircularProgressIndicator(),
-  //               Padding(
-  //                 padding: EdgeInsets.all(8.0),
-  //                 child: Text("Loading"),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     );
-  //   },
-  // );
-  int a = AppService().daysBetween(DateTime.now(), date);
-  if (a < 0) {
-    await AppService().readCalendarallEventModel2(_auth!.uid, date);
-    // await loadDataallEvent2();
-  }
+  setdataEvent(date);
+  _selectDate = date;
 }
 
 Future loadDataallEvent2() async {
+  // await Future.delayed(const Duration(milliseconds: 0));
   // events.clear();
   myListString.clear();
   final colors = [
@@ -148,78 +287,86 @@ Future loadDataallEvent2() async {
   List<String> strArry = [];
   // find Result finishtodosid //move call to main.dart
   //วน loop ตามวัน
-  for (var i = 0;
-      i < controller.calendaralleventModels.last.dataDate.length;
-      i++) {
-    myListString = [];
-    colorsNo = 0;
-    //วน loop รายการที่มีในวันนั้น
-    for (var c = 0;
-        c < controller.calendaralleventModels.last.finishtodosid.length;
-        c++) {
-      strArry =
-          controller.calendaralleventModels.last.finishtodosid[c].split('-');
-      if (controller.calendaralleventModels.last.dataDate[i] == strArry[0]) {
-        //Read data finishtodo type boolean to set event calendar
-        if (strArry[1].isNotEmpty) {
-          //find data finishtodo on firebase
-          await AppService().readTodoResultModel(
-              strArry[1], controller.calendaralleventModels.last.dataDate[i]);
-          //loop read data finishtodo result true
-          for (var r = 0;
-              r < controller.todoresultModels.last.finishtodo.length;
-              r++) {
-            if (controller.todoresultModels.last.finishtodo[r] == true) {
-              todoActiveIDs.add(controller.userModels.last.todo[r]);
+  if (controller.calendaralleventModels.isNotEmpty) {
+    for (var i = 0;
+        i < controller.calendaralleventModels.last.dataDate.length;
+        i++) {
+      myListString = [];
+      colorsNo = 0;
+      //วน loop รายการที่มีในวันนั้น
+      for (var c = 0;
+          c < controller.calendaralleventModels.last.finishtodosid.length;
+          c++) {
+        strArry =
+            controller.calendaralleventModels.last.finishtodosid[c].split('-');
+        if (controller.calendaralleventModels.last.dataDate[i] == strArry[0]) {
+          //Read data finishtodo type boolean to set event calendar
+          if (strArry[1].isNotEmpty && _selectValuid != null) {
+            //find data finishtodo on firebase
+            await AppService().readTodoResultModel(_selectValuid!, strArry[1],
+                controller.calendaralleventModels.last.dataDate[i]);
+            //loop read data finishtodo result true
+            if (controller.todoresultModels.isNotEmpty) {
+              for (var r = 0;
+                  r < controller.todoresultModels.last.finishtodo.length;
+                  r++) {
+                if (controller.todoresultModels.last.finishtodo[r] == true) {
+                  todoActiveIDs.add(controller.userModels.last.todo[r]);
+                }
+              }
+              for (var v = 0; v < controller.factoryAllModels.length; v++) {
+                if (controller.todoresultModels.last.checkinid ==
+                    controller.factoryAllModels[v].id) {
+                  titles =
+                      '${controller.factoryAllModels[v].title} ${controller.factoryAllModels[v].subtitle}';
+                  todolistid = controller.todoresultModels.last.checkinid;
+                }
+              }
+              //ช้อมูลเวลาเข้า-ออก
+              DateTime timestart =
+                  (controller.todoresultModels.last.timestampIn).toDate();
+              DateTime timeend =
+                  (controller.todoresultModels.last.timestampOut)!.toDate();
+              //ชุดข้อมูลตามวัน
+              DateTime timeevent = DateTime.parse(
+                  controller.calendaralleventModels.last.dataDate[i]);
+              //set detail event calendar
+              myListString.add(CleanCalendarEvent(titles,
+                  startTime: DateTime(timestart.year, timestart.month,
+                      timestart.day, timestart.hour, timestart.minute),
+                  endTime: DateTime(timeend.year, timeend.month, timeend.day,
+                      timeend.hour, timeend.minute),
+                  description: '$todoActiveIDs',
+                  todoid: todolistid,
+                  image: controller.todoresultModels.last.image,
+                  color: colors[colorsNo++],
+                  todoresultid: controller.todoresultModels.last.todoresultid));
+              //set event calendar
+              events[DateTime(timeevent.year, timeevent.month, timeevent.day)] =
+                  myListString;
+              todoActiveIDs.clear();
             }
+          } else {
+            AppSnackBar(
+                    title: 'Load Data Failure',
+                    massage: 'Please Check Contect Admin')
+                .errorSnackBar();
           }
-          for (var v = 0; v < controller.factoryAllModels.length; v++) {
-            if (controller.todoresultModels.last.checkinid ==
-                controller.factoryAllModels[v].id) {
-              titles =
-                  '${controller.factoryAllModels[v].title} ${controller.factoryAllModels[v].subtitle}';
-              todolistid = controller.todoresultModels.last.checkinid;
-            }
-          }
-          //ช้อมูลเวลาเข้า-ออก
-          DateTime timestart =
-              (controller.todoresultModels.last.timestampIn).toDate();
-          DateTime timeend =
-              (controller.todoresultModels.last.timestampOut)!.toDate();
-          //ชุดข้อมูลตามวัน
-          DateTime timeevent = DateTime.parse(
-              controller.calendaralleventModels.last.dataDate[i]);
-          //set detail event calendar
-          myListString.add(CleanCalendarEvent(titles,
-              startTime: DateTime(timestart.year, timestart.month,
-                  timestart.day, timestart.hour, timestart.minute),
-              endTime: DateTime(timeend.year, timeend.month, timeend.day,
-                  timeend.hour, timeend.minute),
-              description: '$todoActiveIDs',
-              todoid: todolistid,
-              image: controller.todoresultModels.last.image,
-              color: colors[colorsNo++],
-              todoresultid: controller.todoresultModels.last.todoresultid));
-          //set event calendar
-          events[DateTime(timeevent.year, timeevent.month, timeevent.day)] =
-              myListString;
-          todoActiveIDs.clear();
-        } else {
-          AppSnackBar(
-                  title: 'Load Data Failure',
-                  massage: 'Please Check Contect Admin')
-              .errorSnackBar();
         }
+        controller.todoresultModels.clear();
       }
-      controller.todoresultModels.clear();
     }
-    //}
   }
 }
 
-class MobileCalendar extends StatelessWidget {
+class MobileCalendar extends StatefulWidget {
   const MobileCalendar({Key? key}) : super(key: key);
 
+  @override
+  State<MobileCalendar> createState() => _MobileCalendarState();
+}
+
+class _MobileCalendarState extends State<MobileCalendar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -236,16 +383,19 @@ class MobileCalendar extends StatelessWidget {
 }
 
 Widget buildContainerbodyHello() {
-  return InkWell(
-      child: FutureBuilder(
+  return FutureBuilder(
     future: loadDataallEvent2(),
     builder: (BuildContext context, AsyncSnapshot snapshot) {
       return Container(
-        color: kBackgroundColor, //const Color.fromARGB(255, 255, 255, 255),
+        color: kBackgroundColor,
         child: Calendar(
           startOnMonday: false,
           events: events,
           isExpandable: true,
+          // onMonthChanged: (value) {
+          //   setdataEvent(value);
+          //   buildContainerbodyHello();
+          // }, //(value) => setdataEvent(value),
           onDateSelected: (date) => _handleNewDate(date),
           eventDoneColor: Colors.green,
           selectedColor: kPrimaryColor.withOpacity(0.4),
@@ -302,7 +452,7 @@ Widget buildContainerbodyHello() {
         ),
       );
     },
-  ));
+  );
 }
 
 class Generatelist extends StatefulWidget {
@@ -338,28 +488,25 @@ class _GeneratelistState extends State<Generatelist> {
   String fileuploadname = '';
   String fileuploadRemark = '';
 
-  void loadDatafileupload() async {
-    //ใช้กรณี อยากให้เป็นการเข้าเยี่ยมครั้งเดียว
-    // await AppService().readFileUpload('${widget.event.todoid}');
-    if (controller.fileuploadModels.isNotEmpty) {
-      fileupload = controller.fileuploadModels.last.image;
-      fileuploadname = controller.fileuploadModels.last.name;
-      fileuploadRemark = controller.fileuploadModels.last.remark;
-    }
-  }
-
   loadFile() async {
     fileupload = '';
     fileuploadname = '';
     fileuploadRemark = '';
     if (widget.imageid.isNotEmpty && widget.todoresultid.isNotEmpty) {
       // controller.fileuploadModels.clear();
-      await AppService().readFileUpload(_auth!.uid, '${widget.todoid}',
+      await AppService().readFileUpload(_selectValuid!, '${widget.todoid}',
           widget.imagedate, widget.imageid, widget.todoresultid);
 
       for (var i = 0; i < controller.fileuploadModels.length; i++) {
         // if (controller.fileuploadModels[i].todoid == widget.imageid) {
-        loadDatafileupload();
+        // loadDatafileupload();
+        if (controller.fileuploadModels.isNotEmpty) {
+          setState(() {
+            fileupload = controller.fileuploadModels.last.image;
+            fileuploadname = controller.fileuploadModels.last.name;
+            fileuploadRemark = controller.fileuploadModels.last.remark;
+          });
+        }
         // }
       }
     }
@@ -368,7 +515,7 @@ class _GeneratelistState extends State<Generatelist> {
   @override
   void initState() {
     super.initState();
-    loadFile();
+    // loadFile();
     // loadDatafileupload(); //ใช้กรณี อยากให้เป็นการเข้าเยี่ยมครั้งเดียว
   }
 
@@ -386,9 +533,6 @@ class _GeneratelistState extends State<Generatelist> {
         widget.event.summary,
         style: const TextStyle(fontSize: kDefaultFont),
       ),
-      // subtitle: event.description.isNotEmpty
-      //     ? Text(event.description)
-      //     : null,
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -403,6 +547,7 @@ class _GeneratelistState extends State<Generatelist> {
         ],
       ),
       onTap: () async {
+        await loadFile();
         showModalBottomSheet<void>(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
@@ -428,9 +573,6 @@ class _GeneratelistState extends State<Generatelist> {
                         Text(widget.event.summary,
                             style: const TextStyle(fontSize: kDefaultFont)),
                         const Divider(),
-                        // const SizedBox(
-                        //   height: 10,
-                        // ),
                         const Text('วันที่ เวลาเข้า-ออก ',
                             style: TextStyle(
                                 fontSize: kDefaultFont,
@@ -438,16 +580,10 @@ class _GeneratelistState extends State<Generatelist> {
                         Text('(${widget.starttime}) - (${widget.endtime})',
                             style: const TextStyle(fontSize: kDefaultFont)),
                         const Divider(),
-                        // const SizedBox(
-                        //   height: 10,
-                        // ),
                         const Text('รายละเอียด ',
                             style: TextStyle(
                                 fontSize: kDefaultFont,
                                 fontWeight: FontWeight.bold)),
-                        // const SizedBox(
-                        //   height: 5,
-                        // ),
                         Text(
                             widget.event.description
                                 .replaceAll('[', '')
@@ -460,16 +596,6 @@ class _GeneratelistState extends State<Generatelist> {
                             style: TextStyle(
                                 fontSize: kDefaultFont,
                                 fontWeight: FontWeight.bold)),
-                        // SizedBox(
-                        //   child: fileuploadname.isNotEmpty
-                        //       ? Text(fileuploadname,
-                        //           style:
-                        //               const TextStyle(fontSize: kDefaultFont))
-                        //       : const Text(
-                        //           "",
-                        //           style: TextStyle(fontSize: 14),
-                        //         ),
-                        // ),
                         SizedBox(
                           child: fileuploadRemark.isNotEmpty
                               ? Text(fileuploadRemark,
@@ -489,7 +615,7 @@ class _GeneratelistState extends State<Generatelist> {
                                   fileupload,
                                   fit: BoxFit.cover,
                                   width: MediaQuery.of(context).size.width,
-                                  height: 250,
+                                  // height: 250,
                                 )
                               // ? IconButton(
                               //     icon: Image.network(

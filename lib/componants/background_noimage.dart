@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class Background extends StatelessWidget {
+class BackgroundNoimage extends StatelessWidget {
   final Widget child;
-  const Background({
+  const BackgroundNoimage({
     Key? key,
     required this.child,
     this.topImage = "assets/images/main_top.png",
@@ -22,24 +22,24 @@ class Background extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            Positioned(
-              top: 0,
-              left: 0,
-              child: Image.asset(
-                topImage,
-                width: 200,
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Image.asset(bottomImage, width: 140),
-            ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              child: Image.asset(bottomImageLeft, width: 50),
-            ),
+            // Positioned(
+            //   top: 0,
+            //   left: 0,
+            //   child: Image.asset(
+            //     topImage,
+            //     width: 200,
+            //   ),
+            // ),
+            // Positioned(
+            //   bottom: 0,
+            //   right: 0,
+            //   child: Image.asset(bottomImage, width: 140),
+            // ),
+            // Positioned(
+            //   bottom: 0,
+            //   left: 0,
+            //   child: Image.asset(bottomImageLeft, width: 50),
+            // ),
             SafeArea(child: child),
           ],
         ),

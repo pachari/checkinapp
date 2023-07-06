@@ -1,9 +1,10 @@
 import 'package:checkinapp/componants/constants.dart';
-import 'package:checkinapp/states/export_checkin_page.dart';
-import 'package:checkinapp/states/settting_checkin_page.dart';
-import 'package:checkinapp/states/login_page.dart';
-import 'package:checkinapp/states/qrcode_create_page.dart';
-import 'package:checkinapp/states/setting_user_page.dart';
+import 'package:checkinapp/pages/calendar_page.dart';
+import 'package:checkinapp/pages/export_checkin_page.dart';
+import 'package:checkinapp/pages/settting_checkin_page.dart';
+import 'package:checkinapp/pages/login_page.dart';
+import 'package:checkinapp/pages/qrcode_create_page.dart';
+import 'package:checkinapp/pages/setting_user_page.dart';
 import 'package:checkinapp/utility/app_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,11 +17,16 @@ class SettingApp extends StatefulWidget {
 }
 
 class _SettingAppState extends State<SettingApp> {
-  @override
+  void loaddata() async {
+    if (controller.userlistModels.isEmpty) {
+      await AppService().readUserListModel();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    AppService().readUserListModel();
+    loaddata();
   }
 
   @override
@@ -49,8 +55,9 @@ class _SettingAppState extends State<SettingApp> {
           )
         ],
       ),
-      body: Container( //SingleChildScrollView
-        color:kBackgroundColor,
+      body: Container(
+        //SingleChildScrollView
+        color: kBackgroundColor,
         height: MediaQuery.of(context).size.height - 50,
         width: double.infinity,
         child: Padding(
@@ -85,7 +92,8 @@ class _SettingAppState extends State<SettingApp> {
               buildMenuOption(context, 'จัดการผู้ใช้งาน', const UsersApp()),
               // buildMenuOption(context, 'ลงทะเบียนผู้ใช้งาน', const SingInApp()),
               // buildMenuOption(context, 'จัดการประเภทผู้ใช้งาน', const SettingCheckinApp()),
-              buildMenuOption(context, 'จัดการสถานที่', const SettingCheckinApp()),
+              buildMenuOption(
+                  context, 'จัดการสถานที่', const SettingCheckinApp()),
               const SizedBox(
                 height: 30,
               ),
@@ -135,8 +143,9 @@ class _SettingAppState extends State<SettingApp> {
                 height: 10,
                 thickness: 1,
               ),
-              buildMenuOption(context, 'รายการเช็คอิน', const ExportCheckInApp()),
-              
+              buildMenuOption(
+                  context, 'รายการเช็คอิน', const ExportCheckInApp()),
+
               // buildMenuOption(context, 'แสกน QR-code', const QRcodeReader()),
             ],
           ),
@@ -150,7 +159,7 @@ void signOut(BuildContext context) {
   FirebaseAuth.instance.signOut();
   Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const LoginApp()),
+      MaterialPageRoute(builder: (context) => const LoginAndSignup()),
       ModalRoute.withName('/'));
 }
 

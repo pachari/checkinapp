@@ -1,7 +1,7 @@
 // ignore_for_file: non_constant_identifier_names, use_build_context_synchronously, avoid_print
 
 import 'package:checkinapp/componants/constants.dart';
-import 'package:checkinapp/states/login_page.dart';
+import 'package:checkinapp/pages/login_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/utility/app_snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -377,7 +377,7 @@ class _SingInAppState extends State<SingInApp> {
       FirebaseAuth.instance.signOut();
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const LoginApp()),
+          MaterialPageRoute(builder: (context) => const LoginAndSignup()),
           ModalRoute.withName('/'));
     }).catchError((error) {
       print(error.message);
@@ -388,7 +388,7 @@ class _SingInAppState extends State<SingInApp> {
     Widget okButton = TextButton(
       child: const Text("ตกลง"),
       onPressed: () {
-        Get.offAll(() => const LoginApp());
+        Get.offAll(() => const LoginAndSignup());
       },
     );
     // set up the AlertDialog

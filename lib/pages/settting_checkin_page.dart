@@ -1,28 +1,29 @@
 // ignore_for_file: non_constant_identifier_names, use_build_context_synchronously, avoid_print, avoid_function_literals_in_foreach_calls
 
 import 'package:checkinapp/componants/constants.dart';
-import 'package:checkinapp/states/setting_user_edit_page.dart';
-import 'package:checkinapp/states/singin_page.dart';
+import 'package:checkinapp/pages/settting_checkin_create_page.dart';
+import 'package:checkinapp/pages/settting_checkin_edit_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class UsersApp extends StatefulWidget {
-  const UsersApp({super.key});
+class SettingCheckinApp extends StatefulWidget {
+  const SettingCheckinApp({super.key});
 
   @override
-  State<UsersApp> createState() => _UsersAppState();
+  State<SettingCheckinApp> createState() => _SettingCheckinAppState();
 }
 
-class _UsersAppState extends State<UsersApp> {
+class _SettingCheckinAppState extends State<SettingCheckinApp> {
   AppController controller = Get.put(AppController());
   TextEditingController txtQuery = TextEditingController();
   List factorys = [];
   List original = [];
 
   void loadData() {
-    factorys = controller.userlistModels;
-    original = controller.userlistModels;
+    factorys = controller.factoryAllModels;
+    original = controller.factoryAllModels;
+
     setState(() {});
   }
 
@@ -36,7 +37,7 @@ class _UsersAppState extends State<UsersApp> {
     query = query.toLowerCase();
     List result = [];
     factorys.forEach((p) {
-      var subtitle = p.name.toString().toLowerCase();
+      var subtitle = p.subtitle.toString().toLowerCase();
       if (subtitle.contains(query)) {
         result.add(p);
       }
@@ -59,7 +60,7 @@ class _UsersAppState extends State<UsersApp> {
         automaticallyImplyLeading: true,
         backgroundColor: kPrimaryColor,
         title: const Text(
-          "จัดการผู้ใช้งาน",
+          "จัดการสถานที่",
           style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: kDefaultFont,
@@ -129,7 +130,8 @@ class _UsersAppState extends State<UsersApp> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const SingInApp()),
+            MaterialPageRoute(
+                builder: (context) =>  SettingCheckinCreateApp(lastfactoryId:controller.factoryAllModels.length)),
           );
         },
         child: const Icon(Icons.person_add_alt_1_rounded),
@@ -144,13 +146,17 @@ class _UsersAppState extends State<UsersApp> {
         itemCount: factorys.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-              title: Text(factorys[index].name),
-              subtitle: Text(factorys[index].email),
-              leading: const Icon(
-                Icons.account_circle_sharp,
-                size: 40,
-                // color: kPrimaryColor,
-              ),
+              title: Text(factorys[index].title),
+              subtitle: Text(factorys[index].subtitle),
+              leading: CircleAvatar(
+                  backgroundColor: kselectedItemColor,
+                  child: Text(
+                    '${factorys[index].typeid}',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.white),
+                  )),
               trailing: const Icon(
                 Icons.arrow_forward_ios_rounded,
                 // color: kPrimaryColor,
@@ -159,8 +165,8 @@ class _UsersAppState extends State<UsersApp> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => UserEditApp(
-                          userlistModels: controller.userlistModels[index])),
+                      builder: (context) => SettingCheckinEditApp(
+                          factoryModels: controller.factoryAllModels[index])),
                 );
               });
         },

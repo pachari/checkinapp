@@ -1,4 +1,4 @@
-import 'package:checkinapp/states/login_page.dart';
+import 'package:checkinapp/pages/login_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/widgets/widget_barbutton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,7 +26,7 @@ class _CheckUserStateState extends State<CheckUserState> {
             roleUser:controller.userModels.last.role
           );
         } else {
-          return const LoginApp();
+          return const LoginAndSignup();
         }
       },
     );

@@ -5,10 +5,12 @@ class CalendarAllEvent {
   final String uidCheck;
   final List<String> dataDate;
   final List<String> finishtodosid;
+  final List<String> datamonth;
   CalendarAllEvent({
     required this.uidCheck,
     required this.dataDate,
     required this.finishtodosid,
+    required this.datamonth,
   });
 
   Map<String, dynamic> toMap() {
@@ -16,6 +18,7 @@ class CalendarAllEvent {
       'uidCheck': uidCheck,
       'dataDate': dataDate,
       'finishtodosid': finishtodosid,
+      'datamonth': datamonth,
     };
   }
 
@@ -24,6 +27,7 @@ class CalendarAllEvent {
       uidCheck: (map['uidCheck'] ?? '') as String,
       dataDate: List<String>.from((map['dataDate'] ?? const <String>[]) as List<String>),
       finishtodosid: List<String>.from((map['finishtodosid'] ?? const <String>[]) as List<String>),
+      datamonth: List<String>.from((map['datamonth'] ?? const <String>[]) as List<String>),
     );
   }
 

@@ -1,10 +1,10 @@
 // ignore_for_file: avoid_print, must_be_immutable
 // import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/componants/constants.dart';
-import 'package:checkinapp/states/calendar_page.dart';
-import 'package:checkinapp/states/home_page.dart';
-import 'package:checkinapp/states/listcheckin_page.dart';
-import 'package:checkinapp/states/setting_page.dart';
+import 'package:checkinapp/pages/calendar_page.dart';
+import 'package:checkinapp/pages/home_page.dart';
+import 'package:checkinapp/pages/listcheckin_page.dart';
+import 'package:checkinapp/pages/setting_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

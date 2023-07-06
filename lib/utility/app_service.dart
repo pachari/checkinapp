@@ -37,8 +37,7 @@ class AppService {
     controller.fileuploadModels.clear();
     await db_todo
         .doc(uid)
-        .collection(DateFormat('yyyyMMdd')
-            .format(datadate)) 
+        .collection(DateFormat('yyyyMMdd').format(datadate))
         .doc(imagetodoid)
         .collection('fileupload')
         // .doc(imagetodoid)
@@ -52,7 +51,7 @@ class AppService {
             image: value.docs.last['image'],
             uid: uid,
             factoryid: id,
-            todoid: todoid); 
+            todoid: todoid);
         controller.fileuploadModels.add(fileuploadModels);
       }
     });
@@ -164,6 +163,7 @@ class AppService {
 
   Future<void> readUserListModel() async {
     controller.userlistModels.clear();
+
     await db.collection('user').orderBy('email').get().then((value) async {
       if (value.docs.isNotEmpty) {
         for (var i = 0; i < value.docs.length; i++) {
@@ -222,7 +222,6 @@ class AppService {
       //     .then((value) {
       //   if (value.data() != null) {
       //     Map<String, dynamic> data = value.data() as Map<String, dynamic>;
-      //     print(data);
       //     // value.docs.forEach((doc) {
       //       resultdocid.add(docid);
       //     // });
@@ -258,9 +257,10 @@ class AppService {
         resultdocid = [];
         if (value.docs.isEmpty) {
           CheckTodoResultModels checktodoresultModels = CheckTodoResultModels(
-              result: (0),
-              resultcheckinid: resultdocid,
-              collectiondate: datadate,);
+            result: (0),
+            resultcheckinid: resultdocid,
+            collectiondate: datadate,
+          );
           controller.checktodoresultModels.add(checktodoresultModels);
         } else {
           resultdocid.add(value.docs[0].id);
@@ -274,7 +274,8 @@ class AppService {
     }
   }
 
-  Future<void> readTodoResultModel(String eventid, String datadate) async {
+  Future<void> readTodoResultModel(
+      String uid, String eventid, String datadate) async {
     // var formattedDate = DateFormat('yyyyMMdd').format(DateTime.now());
     List<bool> finishtodos = [];
     // appController.todoresultModels.clear();
@@ -288,7 +289,7 @@ class AppService {
     //     .then((value) {
     // int insertId = 1;
     await db_todo
-        .doc(_auth?.uid)
+        .doc(uid) //_auth?.uid
         .collection(datadate)
         .doc(eventid)
         .get()
@@ -310,7 +311,7 @@ class AppService {
             checkinid: data['checkinid'],
             image: eventid,
             todostatus: data['todostatus'],
-            todoresultid:data['image'] ?? ''); 
+            todoresultid: data['image'] ?? '');
 
         controller.todoresultModels.add(todoresultModels);
         finishtodos = [];
@@ -400,65 +401,121 @@ class AppService {
     controller.alleventforpirntModels.add(alleventforpirntModels);
   }
 
-  Future<void> readCalendarallEventModel(String uid, int days) async {
-    var formattedDate = DateFormat('yyyyMM').format(DateTime.now());
-    List<String> finishtodos = [];
-    String d = '';
-    for (var i = 1; i <= days; i++) {
-      if (i < 10) {
-        d = '${formattedDate}0$i';
-      } else {
-        d = '$formattedDate$i';
-      }
-      await db_todo.doc(uid).collection(d).get().then(
-        (querySnapshot) {
-          if (querySnapshot.docs.isNotEmpty) {
-            finishtodos.add(d);
-          }
-        },
-        onError: (e) => print("Error completing: $e"),
-      );
-    }
-    CalendarAllEvent calendaralleventModels = CalendarAllEvent(
-        uidCheck: uid, dataDate: finishtodos, finishtodosid: []);
-    controller.calendaralleventModels.add(calendaralleventModels);
-  }
+  // Future<void> readCalendarallEventModel(String uid, int days) async {
+  //   var formattedDate = DateFormat('yyyyMM').format(DateTime.now());
+  //   List<String> finishtodos = [];
+  //   String d = '';
+  //   for (var i = 1; i <= days; i++) {
+  //     if (i < 10) {
+  //       d = '${formattedDate}0$i';
+  //     } else {
+  //       d = '$formattedDate$i';
+  //     }
+  //     await db_todo.doc(uid).collection(d).get().then(
+  //       (querySnapshot) {
+  //         if (querySnapshot.docs.isNotEmpty) {
+  //           finishtodos.add(d);
+  //         }
+  //       },
+  //       onError: (e) => print("Error completing: $e"),
+  //     );
+  //   }
+  //   CalendarAllEvent calendaralleventModels = CalendarAllEvent(
+  //       uidCheck: uid, dataDate: finishtodos, finishtodosid: []);
+  //   controller.calendaralleventModels.add(calendaralleventModels);
+  // }
 
-  Future<void> readCalendarallEventModel2(String uid,DateTime datadate) async {
-    var formattedDate = DateFormat('yyyyMM').format(datadate);
+  Future<void> readCalendarallEventModel2(String uid, DateTime datadate) async {
+    var datemonth = DateFormat('yyyyMM').format(datadate);
     List<String> finishtodos = [];
     List<String> finishtodosid = [];
-    DateTime dataDate = DateTime(datadate.year, datadate.month, 0);
-    DateTime dataDate2 =
-        DateTime(datadate.year, datadate.month + 1, 0);
-    int inDays = dataDate2.difference(dataDate).inDays;
+    List<String> listsmonth = [datemonth];
+    // DateTime dataDate = DateTime(datadate.year, datadate.month, 0);
+    // DateTime dataDate2 = DateTime(datadate.year, datadate.month + 1, 0);
+    // int inDays = dataDate2.difference(dataDate).inDays;
+    // int aLlDays = dataDate1.difference(dataDate).inDays;
     String d = '';
-    for (var i = 1; i <= inDays; i++) {
-      if (i < 10) {
-        d = '${formattedDate}0$i';
-      } else {
-        d = '$formattedDate$i';
-      }
-      // set data result date save
-      await db_todo.doc(uid).collection(d).get().then(
-        //.orderBy('checkinid')
-        (querySnapshot) async {
-          if (querySnapshot.docs.isNotEmpty) {
-            finishtodos.add(d);
-            for (var x = 0; x < querySnapshot.docs.length; x++) {
-              finishtodosid.add('$d-${querySnapshot.docs[x].id}');
-            }
-            // });
+    // datemonth.add(datemonth);
+    // if (controller.calendaralleventModels.isNotEmpty && controller.calendaralleventModels.last.uidCheck == uid) {
+    //   // for (var i = 0;
+    //   //     i < controller.calendaralleventModels.last.datamonth.length;
+    //   //     i++) {
+    //   //   if (controller.calendaralleventModels.last.datamonth[i] != datemonth) {
+    //   //     searchBooleanmonth = true;
+    //   //   }
+    //   // }
+    //   // if (searchBooleanmonth == true) {
+    //     // for (var i = 0; i < 2; i++) {
+    //     //   if (i > 0) {
+    //     //     datemonth = DateFormat('yyyyMM')
+    //     //         .format(DateTime(datadate.year, datadate.month, 0));
+    //     //     listsmonth.add(datemonth);
+    //     //   }
+    //       for (var z = 1; z <= 31; z++) {
+    //         if (z < 10) {
+    //           d = '${datemonth}0$z';
+    //         } else {
+    //           d = '$datemonth$z';
+    //         }
+    //         // set data result date save
+    //         await db_todo.doc(uid).collection(d).get().then(
+    //           (querySnapshot) async {
+    //             if (querySnapshot.docs.isNotEmpty) {
+    //               finishtodos.add(d);
+    //               for (var x = 0; x < querySnapshot.docs.length; x++) {
+    //                 finishtodosid.add('$d-${querySnapshot.docs[x].id}');
+    //               }
+    //               // });
+    //             }
+    //           },
+    //           onError: (e) => print("Error completing: $e"),
+    //         );
+    //       }
+    //     // }
+    //     // set data CalendarAllEvent
+    //     CalendarAllEvent calendaralleventModels = CalendarAllEvent(
+    //         uidCheck: uid,
+    //         dataDate: finishtodos,
+    //         finishtodosid: finishtodosid,
+    //         datamonth: listsmonth);
+    //     controller.calendaralleventModels.add(calendaralleventModels);
+    //   // }
+    // } else {
+      for (var i = 0; i < 2; i++) {
+        if (i > 0) {
+          datemonth = DateFormat('yyyyMM')
+              .format(DateTime(datadate.year, datadate.month, 0));
+          listsmonth.add(datemonth);
+        }
+        for (var z = 1; z <= 31; z++) {
+          if (z < 10) {
+            d = '${datemonth}0$z';
+          } else {
+            d = '$datemonth$z';
           }
-        },
-        onError: (e) => print("Error completing: $e"),
-      );
-    }
-
-    // set data CalendarAllEvent
-    CalendarAllEvent calendaralleventModels = CalendarAllEvent(
-        uidCheck: uid, dataDate: finishtodos, finishtodosid: finishtodosid);
-    controller.calendaralleventModels.add(calendaralleventModels);
+          // set data result date save
+          await db_todo.doc(uid).collection(d).get().then(
+            (querySnapshot) async {
+              if (querySnapshot.docs.isNotEmpty) {
+                finishtodos.add(d);
+                for (var x = 0; x < querySnapshot.docs.length; x++) {
+                  finishtodosid.add('$d-${querySnapshot.docs[x].id}');
+                }
+                // });
+              }
+            },
+            onError: (e) => print("Error completing: $e"),
+          );
+        }
+      }
+      // set data CalendarAllEvent
+      CalendarAllEvent calendaralleventModels = CalendarAllEvent(
+          uidCheck: uid,
+          dataDate: finishtodos,
+          finishtodosid: finishtodosid,
+          datamonth: listsmonth);
+      controller.calendaralleventModels.add(calendaralleventModels);
+    // }
   }
 
   double calculateDistance(
@@ -559,8 +616,8 @@ class AppService {
   }
 
   int daysBetween(DateTime from, DateTime to) {
-    from = DateTime(from.year, from.month, from.day);
-    to = DateTime(to.year, to.month, to.day);
+    from = DateTime(from.year, from.month); //, from.day
+    to = DateTime(to.year, to.month); //, to.day
     return (to.difference(from).inHours / 24).round();
   }
 }

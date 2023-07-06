@@ -1,8 +1,7 @@
-// ignore_for_file: avoid_print, use_build_context_synchronously
+// ignore_for_file: avoid_print, use_build_context_synchronously, must_be_immutable
 
 import 'package:checkinapp/componants/constants.dart';
-import 'package:checkinapp/models/factory_all_model.dart';
-import 'package:checkinapp/states/settting_checkin_page.dart';
+import 'package:checkinapp/pages/settting_checkin_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/utility/app_service.dart';
 import 'package:checkinapp/utility/app_snackbar.dart';
@@ -10,15 +9,16 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
-class SettingCheckinEditApp extends StatefulWidget {
-  const SettingCheckinEditApp({super.key, required this.factoryModels});
-  final FactoryAllModel factoryModels;
+class SettingCheckinCreateApp extends StatefulWidget {
+   SettingCheckinCreateApp({super.key, required this.lastfactoryId});
+  int lastfactoryId;
 
   @override
-  State<SettingCheckinEditApp> createState() => _SettingCheckinEditAppState();
+  State<SettingCheckinCreateApp> createState() =>
+      _SettingCheckinCreateAppState();
 }
 
-class _SettingCheckinEditAppState extends State<SettingCheckinEditApp> {
+class _SettingCheckinCreateAppState extends State<SettingCheckinCreateApp> {
   AppController controller = Get.put(AppController());
   TextEditingController titleController = TextEditingController();
   TextEditingController subtitleController = TextEditingController();
@@ -26,22 +26,10 @@ class _SettingCheckinEditAppState extends State<SettingCheckinEditApp> {
   TextEditingController typeidController = TextEditingController();
   TextEditingController latController = TextEditingController();
   TextEditingController lonController = TextEditingController();
-  int factoryId = 0;
-
-  void loadData() {
-    titleController.text = widget.factoryModels.title;
-    subtitleController.text = widget.factoryModels.subtitle;
-    qrController.text = widget.factoryModels.qr;
-    typeidController.text = '${widget.factoryModels.typeid}';
-    latController.text = '${widget.factoryModels.position.latitude}';
-    lonController.text = '${widget.factoryModels.position.longitude}';
-    factoryId = widget.factoryModels.id;
-  }
 
   @override
   void initState() {
     super.initState();
-    loadData();
   }
 
   @override
@@ -51,7 +39,7 @@ class _SettingCheckinEditAppState extends State<SettingCheckinEditApp> {
         automaticallyImplyLeading: true,
         backgroundColor: kTabsColor,
         title: const Text(
-          "แก้ไขข้อมูล สถานที่",
+          "สร้างสถานที่",
           style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: kDefaultFont,
@@ -202,9 +190,8 @@ class _SettingCheckinEditAppState extends State<SettingCheckinEditApp> {
                     ),
                   ),
                 ),
-                onTap: ()  {
+                onTap: () {
                   checkdata();
-                  
                 },
               ),
             ],
@@ -254,8 +241,8 @@ class _SettingCheckinEditAppState extends State<SettingCheckinEditApp> {
           .errorSnackBar();
     } else {
       try {
-        await AppService().updateInfoFactory(
-            factoryId,
+        await AppService().addInfoFactory(
+            widget.lastfactoryId+1,
             titleController.text,
             subtitleController.text,
             typeidController.text,
@@ -267,7 +254,6 @@ class _SettingCheckinEditAppState extends State<SettingCheckinEditApp> {
       } catch (e) {
         print(e);
       }
-      
     }
   }
 
@@ -284,7 +270,7 @@ class _SettingCheckinEditAppState extends State<SettingCheckinEditApp> {
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: const Text("บันทึกสำเร็จ !!"),
-      content: const Text("แก้ไขข้อมูลผู้ใช้งานสำเร็จ"),
+      content: const Text("สร้างสถานที่สำเร็จ"),
       actions: [
         okButton,
       ],

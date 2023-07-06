@@ -1,29 +1,28 @@
 // ignore_for_file: non_constant_identifier_names, use_build_context_synchronously, avoid_print, avoid_function_literals_in_foreach_calls
 
 import 'package:checkinapp/componants/constants.dart';
-import 'package:checkinapp/states/settting_checkin_create_page.dart';
-import 'package:checkinapp/states/settting_checkin_edit_page.dart';
+import 'package:checkinapp/pages/setting_user_edit_page.dart';
+import 'package:checkinapp/pages/singin_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SettingCheckinApp extends StatefulWidget {
-  const SettingCheckinApp({super.key});
+class UsersApp extends StatefulWidget {
+  const UsersApp({super.key});
 
   @override
-  State<SettingCheckinApp> createState() => _SettingCheckinAppState();
+  State<UsersApp> createState() => _UsersAppState();
 }
 
-class _SettingCheckinAppState extends State<SettingCheckinApp> {
+class _UsersAppState extends State<UsersApp> {
   AppController controller = Get.put(AppController());
   TextEditingController txtQuery = TextEditingController();
   List factorys = [];
   List original = [];
 
   void loadData() {
-    factorys = controller.factoryAllModels;
-    original = controller.factoryAllModels;
-
+    factorys = controller.userlistModels;
+    original = controller.userlistModels;
     setState(() {});
   }
 
@@ -37,7 +36,7 @@ class _SettingCheckinAppState extends State<SettingCheckinApp> {
     query = query.toLowerCase();
     List result = [];
     factorys.forEach((p) {
-      var subtitle = p.subtitle.toString().toLowerCase();
+      var subtitle = p.name.toString().toLowerCase();
       if (subtitle.contains(query)) {
         result.add(p);
       }
@@ -60,7 +59,7 @@ class _SettingCheckinAppState extends State<SettingCheckinApp> {
         automaticallyImplyLeading: true,
         backgroundColor: kPrimaryColor,
         title: const Text(
-          "จัดการสถานที่",
+          "จัดการผู้ใช้งาน",
           style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: kDefaultFont,
@@ -130,8 +129,7 @@ class _SettingCheckinAppState extends State<SettingCheckinApp> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) =>  SettingCheckinCreateApp(lastfactoryId:controller.factoryAllModels.length)),
+            MaterialPageRoute(builder: (context) => const SingInApp()),
           );
         },
         child: const Icon(Icons.person_add_alt_1_rounded),
@@ -146,17 +144,13 @@ class _SettingCheckinAppState extends State<SettingCheckinApp> {
         itemCount: factorys.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-              title: Text(factorys[index].title),
-              subtitle: Text(factorys[index].subtitle),
-              leading: CircleAvatar(
-                  backgroundColor: kselectedItemColor,
-                  child: Text(
-                    '${factorys[index].typeid}',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: Colors.white),
-                  )),
+              title: Text(factorys[index].name),
+              subtitle: Text(factorys[index].email),
+              leading: const Icon(
+                Icons.account_circle_sharp,
+                size: 40,
+                // color: kPrimaryColor,
+              ),
               trailing: const Icon(
                 Icons.arrow_forward_ios_rounded,
                 // color: kPrimaryColor,
@@ -165,8 +159,8 @@ class _SettingCheckinAppState extends State<SettingCheckinApp> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => SettingCheckinEditApp(
-                          factoryModels: controller.factoryAllModels[index])),
+                      builder: (context) => UserEditApp(
+                          userlistModels: controller.userlistModels[index])),
                 );
               });
         },

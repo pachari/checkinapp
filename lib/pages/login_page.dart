@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 
-import 'package:checkinapp/states/singin_page.dart';
+import 'package:checkinapp/pages/singin_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/utility/app_service.dart';
 import 'package:checkinapp/widgets/widget_barbutton.dart';
@@ -15,14 +15,14 @@ import 'package:checkinapp/utility/app_snackbar.dart';
 import 'package:checkinapp/widgets/widget_form.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class LoginApp extends StatefulWidget {
-  const LoginApp({super.key});
+class LoginAndSignup extends StatefulWidget {
+  const LoginAndSignup({super.key});
 
   @override
-  State<LoginApp> createState() => _LoginAppState();
+  State<LoginAndSignup> createState() => _LoginAndSignupState();
 }
 
-class _LoginAppState extends State<LoginApp> {
+class _LoginAndSignupState extends State<LoginAndSignup> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   var user = FirebaseAuth.instance.currentUser;
   bool _passwordVisible = false;
@@ -169,8 +169,8 @@ class _LoginAppState extends State<LoginApp> {
     try {
       user = await _auth
           .signInWithEmailAndPassword(
-        email: emailController.text.trim(), //"pachari_pm@hotmail.com",
-        password: passwordController.text.trim(), //"123456", //
+        email: emailController.text.trim(), 
+        password: passwordController.text.trim(), 
       )
           .then((user) {
         print("signed in ${user.user}");
@@ -179,11 +179,6 @@ class _LoginAppState extends State<LoginApp> {
         print(error.message);
         AppSnackBar(title: 'Login Failure', massage: '${error.message}')
             .errorSnackBar();
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     content: Text('${error.message}'),
-        //   ),
-        // );
       });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

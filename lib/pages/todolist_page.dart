@@ -6,14 +6,15 @@ import 'package:checkinapp/blocs/todo_list/todo_list_bloc.dart';
 import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/models/factory_model.dart';
 import 'package:checkinapp/models/fileupload_model.dart';
-import 'package:checkinapp/states/bk_home.dart';
-import 'package:checkinapp/states/todos_page/show_todos.dart';
+import 'package:checkinapp/pages/bk_home.dart';
+import 'package:checkinapp/pages/todos_page/show_todos.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/utility/app_service.dart';
 import 'package:checkinapp/utility/app_snackbar.dart';
 import 'package:checkinapp/widgets/widget_barbutton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -42,13 +43,13 @@ class _ToDoListState extends State<ToDoList> {
   GlobalKey<FormState> key = GlobalKey();
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerRemark = TextEditingController();
-
+  final _auth = FirebaseAuth.instance.currentUser;
   loadData() async {
     // await AppService().readUserModel();
     await AppService().CheckTodoResultModel(widget.factoryModel.id,
         DateFormat('yyyyMMdd').format(DateTime.now()), widget.todoid);
     if (controller.checktodoresultModels.last.result != 0) {
-      await AppService().readTodoResultModel('${widget.factoryModel.id}',
+      await AppService().readTodoResultModel(_auth!.uid,'${widget.factoryModel.id}',
           DateFormat('yyyyMMdd').format(DateTime.now()));
       loadDatafinishtodo();
     }
@@ -192,27 +193,6 @@ class _ToDoListState extends State<ToDoList> {
           key: key,
           child: Column(
             children: [
-              // Padding(
-              //   padding: const EdgeInsets.only(
-              //       top: 15, left: 8, right: 8, bottom: 0),
-              //   child: TextFormField(
-              //     controller: _controllerName,
-              //     decoration: const InputDecoration(
-              //       contentPadding: EdgeInsets.symmetric(
-              //           vertical: 15.0, horizontal: 10.0),
-              //       labelText: 'หัวข้อ',
-              //       // hintText: 'Enter the name of the item'
-              //     ),
-              //     validator: (String? value) {
-              //       if (value == null || value.isEmpty) {
-              //         return 'Please enter the item topic';
-              //       }
-              //       return null;
-              //     },
-              //     maxLines: 2,
-              //     minLines: 1,
-              //   ),
-              // ),
               Padding(
                 padding: const EdgeInsets.only(
                   top: 10,
@@ -270,9 +250,6 @@ class _ToDoListState extends State<ToDoList> {
         child: TextButton(
           onPressed: () async {
             context.read<TodoListBloc>().add(SaveTodoEvent(widget.todoid));
-            // _reference.doc("id${widget.factoryModel.id}").update({
-            //   "timestampOut": DateTime.now(),
-            // });
             uploadimage();
           },
           child: const Text(
@@ -442,17 +419,6 @@ class _ToDoListState extends State<ToDoList> {
           todoid: widget.todoid);
       controller.fileuploadModels.add(fileuploadModels);
 
-      // await todolists
-      //     .doc(user?.uid)
-      //     .collection(formattedDate)
-      //     .doc("id${event.id}")
-      //     .update({
-      //   "finishtodo": finishtodo,
-      //   // "timestampIn": DateTime.now(),
-      //   "timestampOut": DateTime.now(),
-      //   // "uidCheck": user?.uid,
-      //   // "checkinid": event.id,
-      // });
       //Add a new item
       final f = await _reference
           .doc(widget.todoid)
@@ -473,10 +439,6 @@ class _ToDoListState extends State<ToDoList> {
     Widget okButton = TextButton(
       child: const Text("ตกลง"),
       onPressed: () {
-        // loadData();
-        // AppService().ClearActivetodo(context);
-
-        // Navigator.of(context, rootNavigator: true).pop();
         Get.offAll(() => WidgetBarItem(
             currentPage: 2, roleUser: controller.userModels.last.role));
       },
@@ -497,33 +459,6 @@ class _ToDoListState extends State<ToDoList> {
       },
     );
   }
-  // showAlertDialog(BuildContext context) {
-  //   // set up the button
-  //   Widget okButton = TextButton(
-  //     child: const Text("OK"),
-  //     onPressed: () {
-  //       // Get.offAll(() => WidgetBarItem( currentPage: 0, roleUser: controller.userModels.last.role));
-  //       // Get.offAll(() => const ImageUploads()); //ImageUploads
-  //       Get.offAll(() => AddItem(factoryModel: widget.factoryModel));
-  //       loadData();
-  //     },
-  //   );
-  //   // set up the AlertDialog
-  //   AlertDialog alert = AlertDialog(
-  //     title: const Text("To-Do list"),
-  //     content: const Text("Saved successfully!!."),
-  //     actions: [
-  //       okButton,
-  //     ],
-  //   );
-  //   // show the dialog
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return alert;
-  //     },
-  //   );
-  // }
 }
 
 // GetX<AppController> todoUser() {

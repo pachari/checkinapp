@@ -5,7 +5,7 @@ import 'package:app_settings/app_settings.dart';
 import 'package:checkinapp/models/user_model.dart';
 // import 'package:checkinapp/componants/constants.dart';
 // import 'package:checkinapp/models/user_model.dart';
-import 'package:checkinapp/states/login_page.dart';
+import 'package:checkinapp/pages/login_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/utility/app_dialog.dart';
 import 'package:checkinapp/utility/app_networkconnectivity.dart';
@@ -32,7 +32,7 @@ class ConnectionCheckerDemo extends StatefulWidget {
 
 class _ConnectionCheckerDemoState extends State<ConnectionCheckerDemo> {
   AppController controller = Get.put(AppController());
-  // String initRoute = '/loginapp';
+  String initRoute = '/loginapp';
   Map _source = {ConnectivityResult.none: false};
   final NetworkConnectivity _networkConnectivity = NetworkConnectivity.instance;
   String string = '';
@@ -67,20 +67,21 @@ class _ConnectionCheckerDemoState extends State<ConnectionCheckerDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Center(child: Image.asset("assets/icons/icon.png", width: 120)),
-        const SizedBox(
-          height: 20,
-        ),
-        Center(
-            child: Image.asset("assets/images/98891-insider-loading.gif",
-                width: 100)),
-      ],
-    ));
+    return Container();
+    // Scaffold(
+    //     body: Column(
+    //   mainAxisAlignment: MainAxisAlignment.center,
+    //   crossAxisAlignment: CrossAxisAlignment.center,
+    //   children: [
+    //     Center(child: Image.asset("assets/icons/icon.png", width: 120)),
+    //     const SizedBox(
+    //       height: 20,
+    //     ),
+    //     Center(
+    //         child: Image.asset("assets/images/98891-insider-loading.gif",
+    //             width: 100)),
+    //   ],
+    // ));
   }
 
   @override
@@ -146,11 +147,13 @@ class _ConnectionCheckerDemoState extends State<ConnectionCheckerDemo> {
               controller.userModels.add(userModel);
               await AppService().readInfoFactoryAll();
               //เช็คว่าวันไหนมีการบันทึกรายการบ้าง
-              await AppService().readCalendarallEventModel2(userModel.uid,DateTime.now());
+              await AppService()
+                  .readCalendarallEventModel2(userModel.uid, DateTime.now());
 
               switch (controller.userModels.last.role) {
                 case 'admin':
-                  Get.offAll(() => const WidgetBarItem(currentPage: 0, roleUser: 'admin'));
+                  Get.offAll(() =>
+                      const WidgetBarItem(currentPage: 0, roleUser: 'admin'));
                   break;
                 case 'maid':
                   Get.offAll(() =>
@@ -161,12 +164,12 @@ class _ConnectionCheckerDemoState extends State<ConnectionCheckerDemo> {
                       currentPage: 0, roleUser: 'security'));
                   break;
                 default:
-                  Get.offAll(() => const LoginApp());
+                  Get.offAll(() => const LoginAndSignup());
                   break;
               }
             });
           } else {
-            Get.offAll(() => const LoginApp());
+            Get.offAll(() => const LoginAndSignup());
           }
         });
       } else {
@@ -184,40 +187,10 @@ class _ConnectionCheckerDemoState extends State<ConnectionCheckerDemo> {
                 const WidgetBarItem(currentPage: 0, roleUser: 'security'));
             break;
           default:
-            Get.offAll(() => const LoginApp());
+            Get.offAll(() => const LoginAndSignup());
             break;
         }
       }
     }
   }
 }
-
-// class NetworkConnectivity {
-//   NetworkConnectivity._();
-//   static final _instance = NetworkConnectivity._();
-//   static NetworkConnectivity get instance => _instance;
-//   final _networkConnectivity = Connectivity();
-//   final _controller = StreamController.broadcast();
-//   Stream get myStream => _controller.stream;
-//   void initialise() async {
-//     ConnectivityResult result = await _networkConnectivity.checkConnectivity();
-//     _checkStatus(result);
-//     _networkConnectivity.onConnectivityChanged.listen((result) {
-//       print(result);
-//       _checkStatus(result);
-//     });
-//   }
-
-//   void _checkStatus(ConnectivityResult result) async {
-//     bool isOnline = false;
-//     try {
-//       final result = await InternetAddress.lookup('example.com');
-//       isOnline = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-//     } on SocketException catch (_) {
-//       isOnline = false;
-//     }
-//     _controller.sink.add({result: isOnline});
-//   }
-
-//   void disposeStream() => _controller.close();
-// }

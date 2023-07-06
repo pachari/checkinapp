@@ -3,7 +3,7 @@
 import 'package:checkinapp/componants/constants.dart';
 import 'package:checkinapp/cubits/todo_list/filtered_todos_list.dart';
 import 'package:checkinapp/models/factory_model.dart';
-import 'package:checkinapp/states/todolist_page.dart';
+import 'package:checkinapp/pages/todolist_page.dart';
 import 'package:checkinapp/utility/app_controller.dart';
 import 'package:checkinapp/utility/app_dialog.dart';
 import 'package:checkinapp/utility/app_service.dart';
@@ -260,9 +260,6 @@ class ListcheckinState extends State<Listcheckin> {
         .doc(user?.uid)
         .collection(DateFormat('yyyyMMdd').format(DateTime.now()));
     if (distance <= 30 && distance > 0) {
-      //test
-      // context.read<TodoListBloc>().add(SaveTodoEvent(controller.factoryModels[index].id));
-      print('dis $distance');
       for (var i = 0; i < TodoListState.initial().todos.length; i++) {
         finishtodo.add(TodoListState.initial().todos[i].completed);
       }
